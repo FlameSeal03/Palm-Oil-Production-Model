@@ -10,9 +10,7 @@ from dotenv import load_dotenv
 # Configuration
 # ============================================================
 
-GEOJSON_PATH = "data/boundaries/PT.geojson"
-
-IMAGE_DATE = "2026-08-08"
+from config.settings import GEOJSON_PATH, IMAGE_DATE
 
 TOKEN_URL = (
     "https://identity.dataspace.copernicus.eu/"
