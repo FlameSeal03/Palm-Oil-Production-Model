@@ -194,6 +194,17 @@ with MemoryFile(response.content) as memfile:
 
     with memfile.open() as dataset:
 
+        blue = dataset.read(1)
+        green = dataset.read(2)
+        red = dataset.read(3)
+        red_edge_1 = dataset.read(4)
+        red_edge_2 = dataset.read(5)
+        red_edge_3 = dataset.read(6)
+        nir = dataset.read(7)
+        nir_2 = dataset.read(8)
+        swir_1 = dataset.read(9)
+        swir_2 = dataset.read(10)
+
         # Create a mask for pixels outside the plantation
         plantation_mask = geometry_mask(
             [plantation_geometry_utm],
