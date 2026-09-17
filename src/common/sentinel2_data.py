@@ -2,6 +2,8 @@ import os
 import requests
 import geopandas as gpd
 import rasterio
+import numpy as np
+from rasterio.features import geometry_mask
 from rasterio.io import MemoryFile
 from dotenv import load_dotenv
 
@@ -83,6 +85,10 @@ bbox_utm = [
     max_y
 ]
 
+plantation_geometry_utm = plantation_utm_feature.geometry.__geo_interface__
+
+print("Plantation geometry loaded successfully.")
+print("Geometry type:", plantation_utm_feature.geometry.geom_type)
 
 # ============================================================
 # Sentinel-2 request
@@ -188,16 +194,26 @@ with MemoryFile(response.content) as memfile:
 
     with memfile.open() as dataset:
 
-        blue = dataset.read(1)
-        green = dataset.read(2)
-        red = dataset.read(3)
-        red_edge_1 = dataset.read(4)
-        red_edge_2 = dataset.read(5)
-        red_edge_3 = dataset.read(6)
-        nir = dataset.read(7)
-        nir_2 = dataset.read(8)
-        swir_1 = dataset.read(9)
-        swir_2 = dataset.read(10)
+        # Create a mask for pixels outside the plantation
+        plantation_mask = geometry_mask(
+            [plantation_geometry_utm],
+            transform=dataset.transform,
+            invert=True,
+            out_shape=(dataset.height, dataset.width)
+        )
+
+        # Apply the plantation mask to every band
+        blue = np.where(plantation_mask, blue, np.nan)
+        green = np.where(plantation_mask, green, np.nan)
+        red = np.where(plantation_mask, red, np.nan)
+        red_edge_1 = np.where(plantation_mask, red_edge_1, np.nan)
+        red_edge_2 = np.where(plantation_mask, red_edge_2, np.nan)
+        red_edge_3 = np.where(plantation_mask, red_edge_3, np.nan)
+        nir = np.where(plantation_mask, nir, np.nan)
+        nir_2 = np.where(plantation_mask, nir_2, np.nan)
+        swir_1 = np.where(plantation_mask, swir_1, np.nan)
+        swir_2 = np.where(plantation_mask, swir_2, np.nan)
+
 
 
 print("Sentinel-2 data loaded successfully.")
