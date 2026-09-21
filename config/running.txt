@@ -1,2 +1,3 @@
-python -m src.indices.ndre
 python -m src.indices.ndvi
+python -m src.indices.ndre
+python -m src.indices.gndvi
