@@ -1,386 +1,589 @@
-from config.settings import GEOJSON_PATH, START_DATE, END_DATE
-
-import geopandas as gpd
-from pystac_client import Client
-from collections import defaultdict
-from datetime import datetime, timedelta
 import time
 
-# indice functions
-from src.indices.ndvi import calculate_ndvi
-from src.indices.ndre import calculate_ndre
-from src.indices.gndvi import calculate_gndvi
-from src.indices.ndmi import calculate_ndmi
-from src.indices.evi import calculate_evi
+import numpy as np
+import pystac_client
+from shapely.geometry import shape
 
-MAX_CLOUD_COVER = 80
+from config.settings import (
+    GEOJSON_PATH,
+    START_DATE,
+    END_DATE,
+)
 
-# Connect to Copernicus Data Space
-STAC_URL = "https://stac.dataspace.copernicus.eu/v1"
-catalog = Client.open(STAC_URL)
-
-
-# Load plantation boundary
-plantation_gdf = gpd.read_file(GEOJSON_PATH)
-
-plantation = plantation_gdf.iloc[0]
-plantation_geometry = plantation.geometry.__geo_interface__
-
-print("Plantation geometry loaded successfully.")
-print("Geometry type:", plantation.geometry.geom_type)
+from src.composites.process_sentinel2_scene import (
+    process_sentinel2_scene,
+)
 
 
-# Search for Sentinel-2 imagery month by month
-monthly_scenes = defaultdict(list)
+# -------------------------------------------------------------
+# Configuration
+# -------------------------------------------------------------
 
-start = datetime.fromisoformat(START_DATE)
-end = datetime.fromisoformat(END_DATE)
+CLOUD_THRESHOLD = 80.0
 
-current = start.replace(day=1)
+STAC_URL = (
+    "https://stac.dataspace.copernicus.eu/v1"
+)
 
-total_scenes = 0
+COLLECTION = "sentinel-2-l2a"
 
-while current <= end:
 
-    # First day of current month
-    month_start = current
+# -------------------------------------------------------------
+# Find scenes for one month
+# -------------------------------------------------------------
 
-    # First day of next month
-    if current.month == 12:
-        next_month = current.replace(
-            year=current.year + 1,
-            month=1
-        )
-    else:
-        next_month = current.replace(
-            month=current.month + 1
-        )
+def find_monthly_scenes(
+    catalog,
+    plantation_geometry,
+    start_date,
+    end_date,
+):
+    """
+    Find Sentinel-2 scenes for a date range.
 
-    month_end = next_month - timedelta(seconds=1)
-
-    # Do not search past END_DATE
-    if month_end > end:
-        month_end = end
-
-    month_name = current.strftime("%Y-%m")
-
-    print(f"\nSearching {month_name}...")
+    Only scenes with cloud cover at or below
+    CLOUD_THRESHOLD are retained.
+    """
 
     search = catalog.search(
-        collections=["sentinel-2-l2a"],
+        collections=[COLLECTION],
         intersects=plantation_geometry,
-        datetime=(
-            f"{month_start.isoformat()}Z/"
-            f"{month_end.isoformat()}Z"
-        ),
-        max_items=100,
+        datetime=f"{start_date}/{end_date}",
     )
 
-    month_items = list(search.items())
+    scenes = list(search.items())
 
-    time.sleep(3)
-
-    print(f"Found {len(month_items)} scenes.")
-
-    total_scenes += len(month_items)
-
-    # Store scenes that pass the cloud threshold
-    for item in month_items:
-
-        cloud_cover = item.properties.get("eo:cloud_cover")
-
-        if cloud_cover is not None and cloud_cover <= MAX_CLOUD_COVER:
-
-            monthly_scenes[month_name].append({
-                "date": item.datetime,
-                "cloud_cover": cloud_cover,
-                "id": item.id,
-            })
-
-    current = next_month
-
-
-print(f"\nTotal scenes found: {total_scenes}")
-
-
-# Sort each month by cloud cover
-for month in monthly_scenes:
-
-    monthly_scenes[month].sort(
-        key=lambda x: x["cloud_cover"]
+    print(
+        f"\nScenes found between "
+        f"{start_date} and {end_date}:",
+        len(scenes),
     )
 
-    print(f"\n{month}:")
+    # ---------------------------------------------------------
+    # Filter by cloud cover
+    # ---------------------------------------------------------
 
-    for item in monthly_scenes[month]:
+    usable_scenes = []
 
-        print(
-            item["date"],
-            "| Cloud:",
-            item["cloud_cover"],
-            "|",
-            item["id"]
+    for scene in scenes:
+
+        cloud_cover = scene.properties.get(
+            "eo:cloud_cover"
         )
 
+        if cloud_cover is None:
+            continue
 
-# Display results
-print("\nMonthly Sentinel-2 scenes:")
+        if cloud_cover <= CLOUD_THRESHOLD:
+            usable_scenes.append(scene)
 
-for month in sorted(monthly_scenes):
-    print(f"\n{month}")
+    # ---------------------------------------------------------
+    # Sort by acquisition date
+    # ---------------------------------------------------------
 
-    for scene in monthly_scenes[month]:
-        print(
-            f"  {scene['date']} | "
-            f"Cloud: {scene['cloud_cover']}% | "
-            f"{scene['id']}"
+    usable_scenes.sort(
+        key=lambda scene: scene.datetime
+    )
+
+    print(
+        "Scenes retained after cloud filtering:",
+        len(usable_scenes),
+    )
+
+    for scene in usable_scenes:
+
+        cloud_cover = scene.properties.get(
+            "eo:cloud_cover"
         )
 
+        print(
+            "  ",
+            scene.datetime.date(),
+            f"{cloud_cover:.2f}%",
+            scene.id,
+        )
 
-# ---------------------------------------------------------
-# Test retrieving one Sentinel-2 scene with SCL
-# ---------------------------------------------------------
-
-import os
-import requests
-import numpy as np
-import rasterio
-from io import BytesIO
-from dotenv import load_dotenv
-from shapely.geometry import shape
-from rasterio.warp import transform_bounds
+    return usable_scenes
 
 
-# Load Sentinel Hub credentials
-load_dotenv()
+# -------------------------------------------------------------
+# Create monthly composite
+# -------------------------------------------------------------
 
-CLIENT_ID = os.getenv("SENTINELHUB_CLIENT_ID")
-CLIENT_SECRET = os.getenv("SENTINELHUB_CLIENT_SECRET")
+def create_monthly_composite(
+    scenes,
+    month_name,
+):
+    """
+    Process all Sentinel-2 scenes for a month
+    and create pixel-wise median composites.
 
-TOKEN_URL = (
-    "https://identity.dataspace.copernicus.eu/"
-    "auth/realms/CDSE/protocol/openid-connect/token"
-)
+    Returns:
+        Dictionary containing:
+            - monthly NDVI
+            - monthly NDRE
+            - monthly GNDVI
+            - monthly NDMI
+            - monthly EVI
+            - observation count
+    """
 
-PROCESS_URL = "https://sh.dataspace.copernicus.eu/process/v1"
+    if not scenes:
+        print(
+            f"\nNo usable scenes found for {month_name}."
+        )
 
+        return None
 
-# Get OAuth token
-token_response = requests.post(
-    TOKEN_URL,
-    data={
-        "grant_type": "client_credentials",
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-    },
-)
+    print(
+        f"\nCreating composite for {month_name}"
+    )
 
-token_response.raise_for_status()
+    # ---------------------------------------------------------
+    # Arrays containing one layer per scene
+    # ---------------------------------------------------------
 
-access_token = token_response.json()["access_token"]
+    ndvi_arrays = []
+    ndre_arrays = []
+    gndvi_arrays = []
+    ndmi_arrays = []
+    evi_arrays = []
 
+    # ---------------------------------------------------------
+    # Process every scene
+    # ---------------------------------------------------------
 
-# Use the clearest August scene for testing
-test_scene = "S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442"
+    for index, scene in enumerate(
+        scenes,
+        start=1,
+    ):
 
-print("\nTesting scene:")
-print(test_scene)
+        print(
+            f"\n----------------------------------------"
+        )
 
+        print(
+            f"Processing scene "
+            f"{index}/{len(scenes)}"
+        )
 
-# Get plantation bounds in UTM Zone 49S
-plantation_shape = shape(plantation_geometry)
+        print(
+            f"Date: {scene.datetime.date()}"
+        )
 
-bbox_wgs84 = plantation_shape.bounds
+        print(
+            f"Cloud cover: "
+            f"{scene.properties.get('eo:cloud_cover'):.2f}%"
+        )
 
-bbox_utm = transform_bounds(
-    "EPSG:4326",
-    "EPSG:32749",
-    *bbox_wgs84
-)
+        print(
+            f"Scene ID: {scene.id}"
+        )
 
-print("\nUTM bounding box:")
-print(bbox_utm)
+        # -----------------------------------------------------
+        # Process individual scene
+        # -----------------------------------------------------
 
+        results = process_sentinel2_scene(
+            scene.id
+        )
 
-# Sentinel Hub evalscript
-evalscript = """
-//VERSION=3
+        ndvi_arrays.append(
+            results["ndvi"]
+        )
 
-function setup() {
+        ndre_arrays.append(
+            results["ndre"]
+        )
+
+        gndvi_arrays.append(
+            results["gndvi"]
+        )
+
+        ndmi_arrays.append(
+            results["ndmi"]
+        )
+
+        evi_arrays.append(
+            results["evi"]
+        )
+
+        # -----------------------------------------------------
+        # Small delay to reduce API pressure
+        # -----------------------------------------------------
+
+        if index < len(scenes):
+            time.sleep(3)
+
+    # ---------------------------------------------------------
+    # Stack scene arrays
+    # ---------------------------------------------------------
+
+    print(
+        "\nStacking monthly scene arrays..."
+    )
+
+    ndvi_stack = np.stack(
+        ndvi_arrays,
+        axis=0,
+    )
+
+    ndre_stack = np.stack(
+        ndre_arrays,
+        axis=0,
+    )
+
+    gndvi_stack = np.stack(
+        gndvi_arrays,
+        axis=0,
+    )
+
+    ndmi_stack = np.stack(
+        ndmi_arrays,
+        axis=0,
+    )
+
+    evi_stack = np.stack(
+        evi_arrays,
+        axis=0,
+    )
+
+    # ---------------------------------------------------------
+    # Calculate number of valid observations
+    # ---------------------------------------------------------
+
+    observation_count = np.sum(
+        ~np.isnan(ndvi_stack),
+        axis=0,
+    )
+
+    # ---------------------------------------------------------
+    # Calculate pixel-wise monthly medians
+    # ---------------------------------------------------------
+
+    print(
+        "Calculating monthly pixel-wise medians..."
+    )
+
+    monthly_ndvi = np.nanmedian(
+        ndvi_stack,
+        axis=0,
+    )
+
+    monthly_ndre = np.nanmedian(
+        ndre_stack,
+        axis=0,
+    )
+
+    monthly_gndvi = np.nanmedian(
+        gndvi_stack,
+        axis=0,
+    )
+
+    monthly_ndmi = np.nanmedian(
+        ndmi_stack,
+        axis=0,
+    )
+
+    monthly_evi = np.nanmedian(
+        evi_stack,
+        axis=0,
+    )
+
+    print(
+        "Monthly composite created successfully!"
+    )
+
+    # ---------------------------------------------------------
+    # Return composite
+    # ---------------------------------------------------------
+
     return {
-        input: [
-            "B02",
-            "B03",
-            "B04",
-            "B05",
-            "B06",
-            "B07",
-            "B08",
-            "B8A",
-            "B11",
-            "B12",
-            "SCL"
-        ],
-        output: {
-            bands: 11,
-            sampleType: "FLOAT32"
-        }
-    };
-}
-
-function evaluatePixel(sample) {
-    return [
-        sample.B02,
-        sample.B03,
-        sample.B04,
-        sample.B05,
-        sample.B06,
-        sample.B07,
-        sample.B08,
-        sample.B8A,
-        sample.B11,
-        sample.B12,
-        sample.SCL
-    ];
-}
-"""
+        "month": month_name,
+        "ndvi": monthly_ndvi,
+        "ndre": monthly_ndre,
+        "gndvi": monthly_gndvi,
+        "ndmi": monthly_ndmi,
+        "evi": monthly_evi,
+        "observation_count": observation_count,
+    }
 
 
-# Process API request
-request_body = {
-    "input": {
-        "bounds": {
-            "bbox": list(bbox_utm),
-            "properties": {
-                "crs": "http://www.opengis.net/def/crs/EPSG/0/32749"
-            }
-        },
-        "data": [
-            {
-                "type": "sentinel-2-l2a",
-                "dataFilter": {
-                    "timeRange": {
-                        "from": "2026-08-08T00:00:00Z",
-                        "to": "2026-08-09T00:00:00Z"
-                    }
-                }
-            }
-        ]
-    },
-    "output": {
-        "resx": 10,
-        "resy": 10,
-        "responses": [
-            {
-                "identifier": "default",
-                "format": {
-                    "type": "image/tiff"
-                }
-            }
-        ]
-    },
-    "evalscript": evalscript
-}
+# -------------------------------------------------------------
+# Print composite statistics
+# -------------------------------------------------------------
+
+def print_composite_statistics(
+    composite,
+):
+    """
+    Print summary statistics for a monthly composite.
+    """
+
+    print(
+        "\n========================================"
+    )
+
+    print(
+        f"Monthly Composite: "
+        f"{composite['month']}"
+    )
+
+    print(
+        "========================================"
+    )
+
+    print("\nNDVI:")
+    print(
+        "  Mean:",
+        np.nanmean(composite["ndvi"]),
+    )
+    print(
+        "  Median:",
+        np.nanmedian(composite["ndvi"]),
+    )
+    print(
+        "  Standard deviation:",
+        np.nanstd(composite["ndvi"]),
+    )
+
+    print("\nNDRE:")
+    print(
+        "  Mean:",
+        np.nanmean(composite["ndre"]),
+    )
+    print(
+        "  Median:",
+        np.nanmedian(composite["ndre"]),
+    )
+    print(
+        "  Standard deviation:",
+        np.nanstd(composite["ndre"]),
+    )
+
+    print("\nGNDVI:")
+    print(
+        "  Mean:",
+        np.nanmean(composite["gndvi"]),
+    )
+    print(
+        "  Median:",
+        np.nanmedian(composite["gndvi"]),
+    )
+    print(
+        "  Standard deviation:",
+        np.nanstd(composite["gndvi"]),
+    )
+
+    print("\nNDMI:")
+    print(
+        "  Mean:",
+        np.nanmean(composite["ndmi"]),
+    )
+    print(
+        "  Median:",
+        np.nanmedian(composite["ndmi"]),
+    )
+    print(
+        "  Standard deviation:",
+        np.nanstd(composite["ndmi"]),
+    )
+
+    print("\nEVI:")
+    print(
+        "  Mean:",
+        np.nanmean(composite["evi"]),
+    )
+    print(
+        "  Median:",
+        np.nanmedian(composite["evi"]),
+    )
+    print(
+        "  Standard deviation:",
+        np.nanstd(composite["evi"]),
+    )
+
+    # ---------------------------------------------------------
+    # Observation coverage
+    # ---------------------------------------------------------
+
+    observation_count = composite[
+        "observation_count"
+    ]
+
+    print(
+        "\nObservation count:"
+    )
+
+    print(
+        "  Minimum:",
+        np.nanmin(observation_count),
+    )
+
+    print(
+        "  Maximum:",
+        np.nanmax(observation_count),
+    )
+
+    print(
+        "  Mean:",
+        np.nanmean(observation_count),
+    )
 
 
-# Send request
-response = requests.post(
-    PROCESS_URL,
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    },
-    json=request_body,
-)
+# -------------------------------------------------------------
+# Main program
+# -------------------------------------------------------------
 
+if __name__ == "__main__":
 
-# Print the API response if there is an error
-if response.status_code != 200:
-    print("\nSentinel Hub request failed!")
-    print("Status code:", response.status_code)
-    print("Response:")
-    print(response.text)
+    print(
+        "Starting monthly Sentinel-2 "
+        "composite workflow..."
+    )
 
-response.raise_for_status()
+    # ---------------------------------------------------------
+    # Load STAC catalog
+    # ---------------------------------------------------------
 
-print("\nSentinel Hub request successful!")
-print("Status code:", response.status_code)
+    catalog = pystac_client.Client.open(
+        STAC_URL
+    )
 
-# Read TIFF
-with rasterio.open(BytesIO(response.content)) as dataset:
+    print(
+        "Connected to Copernicus Data Space."
+    )
 
-    data = dataset.read()
+    # ---------------------------------------------------------
+    # Load plantation geometry
+    # ---------------------------------------------------------
 
-    print("Image shape:", data.shape)
-    print("Image dtype:", data.dtype)
+    import json
 
+    with open(
+        GEOJSON_PATH,
+        "r",
+    ) as file:
 
-# Separate bands
-blue = data[0]
-green = data[1]
-red = data[2]
-red_edge_1 = data[3]
-red_edge_2 = data[4]
-red_edge_3 = data[5]
-nir = data[6]
-nir_2 = data[7]
-swir_1 = data[8]
-swir_2 = data[9]
+        geojson = json.load(file)
 
-# Separate SCL band
-scl = data[10]
+    plantation_geometry = shape(
+        geojson["features"][0]["geometry"]
+    )
 
-print("\nSCL statistics:")
-print("Minimum:", np.nanmin(scl))
-print("Maximum:", np.nanmax(scl))
+    print(
+        "Plantation geometry loaded."
+    )
 
-# Create a mask for usable pixels
-# SCL classes 4 and 5 are vegetation and not-vegetated.
-# We remove cloud shadows, clouds, cirrus, and other invalid classes.
+    print(
+        "Geometry type:",
+        plantation_geometry.geom_type,
+    )
 
-valid_mask = np.isin(
-    scl,
-    [4, 5]
-)
+    # ---------------------------------------------------------
+    # Create monthly date ranges
+    # ---------------------------------------------------------
 
-# Apply the SCL mask to all spectral bands
-blue = np.where(valid_mask, blue, np.nan)
-green = np.where(valid_mask, green, np.nan)
-red = np.where(valid_mask, red, np.nan)
-red_edge_1 = np.where(valid_mask, red_edge_1, np.nan)
-red_edge_2 = np.where(valid_mask, red_edge_2, np.nan)
-red_edge_3 = np.where(valid_mask, red_edge_3, np.nan)
-nir = np.where(valid_mask, nir, np.nan)
-nir_2 = np.where(valid_mask, nir_2, np.nan)
-swir_1 = np.where(valid_mask, swir_1, np.nan)
-swir_2 = np.where(valid_mask, swir_2, np.nan)
+    start_year = int(
+        START_DATE[:4]
+    )
 
-print("\nSCL mask created successfully!")
+    start_month = int(
+        START_DATE[5:7]
+    )
 
-print("\nSCL mask applied to spectral bands!")
+    end_year = int(
+        END_DATE[:4]
+    )
 
-print("Total pixels:", valid_mask.size)
-print("Usable pixels:", np.sum(valid_mask))
-print("Masked pixels:", np.sum(~valid_mask))
-print(
-    "Usable percentage:",
-    np.sum(valid_mask) / valid_mask.size * 100
-)
+    end_month = int(
+        END_DATE[5:7]
+    )
 
-# Calculate vegetation indices using the reusable functions
+    current_year = start_year
+    current_month = start_month
 
-ndvi = calculate_ndvi(red, nir)
-ndre = calculate_ndre(red_edge_1, nir_2)
-gndvi = calculate_gndvi(green, nir)
-ndmi = calculate_ndmi(nir, swir_1)
-evi = calculate_evi(blue, red, nir)
+    # ---------------------------------------------------------
+    # Process each month
+    # ---------------------------------------------------------
 
-print("\nVegetation indices calculated successfully!")
+    while (
+        current_year < end_year
+        or (
+            current_year == end_year
+            and current_month <= end_month
+        )
+    ):
 
-print("\nAugust 2026 test scene statistics:")
+        month_start = (
+            f"{current_year:04d}-"
+            f"{current_month:02d}-01"
+        )
 
-print("NDVI mean:", np.nanmean(ndvi))
-print("NDRE mean:", np.nanmean(ndre))
-print("GNDVI mean:", np.nanmean(gndvi))
-print("NDMI mean:", np.nanmean(ndmi))
-print("EVI mean:", np.nanmean(evi))
+        if current_month == 12:
+
+            next_year = current_year + 1
+            next_month = 1
+
+        else:
+
+            next_year = current_year
+            next_month = current_month + 1
+
+        next_month_start = (
+            f"{next_year:04d}-"
+            f"{next_month:02d}-01"
+        )
+
+        # -----------------------------------------------------
+        # Find scenes for this month
+        # -----------------------------------------------------
+
+        scenes = find_monthly_scenes(
+            catalog,
+            plantation_geometry,
+            month_start,
+            next_month_start,
+        )
+
+        # -----------------------------------------------------
+        # Create composite
+        # -----------------------------------------------------
+
+        month_name = (
+            f"{current_year:04d}-"
+            f"{current_month:02d}"
+        )
+
+        composite = create_monthly_composite(
+            scenes,
+            month_name,
+        )
+
+        # -----------------------------------------------------
+        # Print results
+        # -----------------------------------------------------
+
+        if composite is not None:
+
+            print_composite_statistics(
+                composite
+            )
+
+        # -----------------------------------------------------
+        # Move to next month
+        # -----------------------------------------------------
+
+        current_year = next_year
+        current_month = next_month
+
+        # -----------------------------------------------------
+        # Delay between monthly searches
+        # -----------------------------------------------------
+
+        time.sleep(3)
+
+    print(
+        "\nMonthly Sentinel-2 composite "
+        "workflow complete!"
+    )

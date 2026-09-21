@@ -1,5 +1,6 @@
 import os
 from io import BytesIO
+from datetime import datetime
 
 import numpy as np
 import requests
@@ -19,27 +20,67 @@ from src.indices.ndmi import calculate_ndmi
 from src.indices.evi import calculate_evi
 
 
+def get_scene_date(scene_id):
+    """
+    Extract the acquisition date from a Sentinel-2 scene ID.
+
+    Example:
+        S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
+
+    Returns:
+        2026-08-08
+    """
+
+    try:
+        date_string = scene_id.split("_")[2][:8]
+
+        scene_date = datetime.strptime(
+            date_string,
+            "%Y%m%d"
+        ).date()
+
+        return scene_date
+
+    except (IndexError, ValueError):
+        raise ValueError(
+            f"Could not extract acquisition date from scene ID:\n"
+            f"{scene_id}"
+        )
+
+
 def process_sentinel2_scene(scene_id):
     """
     Retrieve and process one Sentinel-2 scene.
 
     The function:
-    1. Authenticates with Copernicus Data Space.
-    2. Loads the plantation geometry in UTM coordinates.
-    3. Creates a bounding box around the plantation.
-    4. Calculates the required image dimensions at 10 m resolution.
-    5. Retrieves Sentinel-2 spectral bands and SCL.
-    6. Applies an SCL quality mask.
-    7. Applies the exact plantation boundary mask.
-    8. Calculates vegetation indices.
-    9. Returns the index arrays and quality information.
+    1. Extracts the acquisition date from the scene ID.
+    2. Authenticates with Copernicus Data Space.
+    3. Loads the plantation geometry in UTM coordinates.
+    4. Creates a bounding box around the plantation.
+    5. Calculates the required image dimensions at 10 m resolution.
+    6. Retrieves Sentinel-2 spectral bands and SCL.
+    7. Applies an SCL quality mask.
+    8. Applies the exact plantation boundary mask.
+    9. Calculates vegetation indices.
+    10. Returns the index arrays and quality information.
     """
 
     print("\nProcessing scene:")
     print(scene_id)
 
     # ---------------------------------------------------------
-    # 1. Load Sentinel Hub credentials
+    # 1. Determine scene acquisition date
+    # ---------------------------------------------------------
+
+    scene_date = get_scene_date(scene_id)
+
+    print("Scene date:", scene_date)
+
+    date_from = f"{scene_date}T00:00:00Z"
+    date_to = f"{scene_date}T23:59:59Z"
+
+    # ---------------------------------------------------------
+    # 2. Load Sentinel Hub credentials
     # ---------------------------------------------------------
 
     load_dotenv()
@@ -53,7 +94,7 @@ def process_sentinel2_scene(scene_id):
         )
 
     # ---------------------------------------------------------
-    # 2. Get OAuth access token
+    # 3. Get OAuth access token
     # ---------------------------------------------------------
 
     token_url = (
@@ -78,7 +119,7 @@ def process_sentinel2_scene(scene_id):
     print("Sentinel Hub authentication successful!")
 
     # ---------------------------------------------------------
-    # 3. Load plantation geometry
+    # 4. Load plantation geometry
     # ---------------------------------------------------------
 
     plantation_utm = shape(plantation_geometry_utm)
@@ -96,13 +137,22 @@ def process_sentinel2_scene(scene_id):
     print(bbox_utm)
 
     # ---------------------------------------------------------
-    # 4. Calculate image dimensions
+    # 5. Calculate image dimensions
     # ---------------------------------------------------------
 
     resolution = 10
 
-    width = int(np.ceil((max_x - min_x) / resolution))
-    height = int(np.ceil((max_y - min_y) / resolution))
+    width = int(
+        np.ceil(
+            (max_x - min_x) / resolution
+        )
+    )
+
+    height = int(
+        np.ceil(
+            (max_y - min_y) / resolution
+        )
+    )
 
     print("\nImage dimensions:")
     print("Width:", width)
@@ -110,10 +160,12 @@ def process_sentinel2_scene(scene_id):
     print("Resolution:", resolution, "meters")
 
     # ---------------------------------------------------------
-    # 5. Sentinel Hub Process API request
+    # 6. Sentinel Hub Process API request
     # ---------------------------------------------------------
 
-    process_url = "https://sh.dataspace.copernicus.eu/process/v1"
+    process_url = (
+        "https://sh.dataspace.copernicus.eu/process/v1"
+    )
 
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -182,7 +234,10 @@ def process_sentinel2_scene(scene_id):
             "bounds": {
                 "bbox": bbox_utm,
                 "properties": {
-                    "crs": "http://www.opengis.net/def/crs/EPSG/0/32749"
+                    "crs": (
+                        "http://www.opengis.net/def/crs/"
+                        "EPSG/0/32749"
+                    )
                 },
             },
             "data": [
@@ -190,10 +245,10 @@ def process_sentinel2_scene(scene_id):
                     "type": "sentinel-2-l2a",
                     "dataFilter": {
                         "timeRange": {
-                            "from": "2026-08-08T00:00:00Z",
-                            "to": "2026-08-08T23:59:59Z"
+                            "from": date_from,
+                            "to": date_to,
                         },
-                        "mosaickingOrder": "mostRecent"
+                        "mosaickingOrder": "mostRecent",
                     },
                     "processing": {},
                 }
@@ -215,7 +270,7 @@ def process_sentinel2_scene(scene_id):
     }
 
     # ---------------------------------------------------------
-    # 6. Retrieve imagery
+    # 7. Retrieve imagery
     # ---------------------------------------------------------
 
     response = requests.post(
@@ -237,10 +292,12 @@ def process_sentinel2_scene(scene_id):
     print("Status code:", response.status_code)
 
     # ---------------------------------------------------------
-    # 7. Read returned TIFF
+    # 8. Read returned TIFF
     # ---------------------------------------------------------
 
-    with rasterio.open(BytesIO(response.content)) as dataset:
+    with rasterio.open(
+        BytesIO(response.content)
+    ) as dataset:
 
         data = dataset.read()
 
@@ -249,8 +306,11 @@ def process_sentinel2_scene(scene_id):
 
         transform = dataset.transform
 
+        dataset_height = dataset.height
+        dataset_width = dataset.width
+
     # ---------------------------------------------------------
-    # 8. Separate spectral bands
+    # 9. Separate spectral bands
     # ---------------------------------------------------------
 
     blue = data[0]
@@ -270,7 +330,7 @@ def process_sentinel2_scene(scene_id):
     scl = data[10]
 
     # ---------------------------------------------------------
-    # 9. Create SCL quality mask
+    # 10. Create SCL quality mask
     # ---------------------------------------------------------
 
     scl_valid_mask = np.isin(
@@ -281,37 +341,72 @@ def process_sentinel2_scene(scene_id):
     print("\nSCL mask created successfully!")
 
     total_pixels = scl_valid_mask.size
-    scl_usable_pixels = np.sum(scl_valid_mask)
-    scl_masked_pixels = total_pixels - scl_usable_pixels
 
-    scl_usable_percentage = (
-        scl_usable_pixels / total_pixels * 100
+    scl_usable_pixels = np.sum(
+        scl_valid_mask
     )
 
-    print("Total pixels:", total_pixels)
-    print("SCL usable pixels:", scl_usable_pixels)
-    print("SCL masked pixels:", scl_masked_pixels)
-    print("SCL usable percentage:", scl_usable_percentage)
+    scl_masked_pixels = (
+        total_pixels -
+        scl_usable_pixels
+    )
+
+    scl_usable_percentage = (
+        scl_usable_pixels /
+        total_pixels *
+        100
+    )
+
+    print(
+        "Total pixels:",
+        total_pixels
+    )
+
+    print(
+        "SCL usable pixels:",
+        scl_usable_pixels
+    )
+
+    print(
+        "SCL masked pixels:",
+        scl_masked_pixels
+    )
+
+    print(
+        "SCL usable percentage:",
+        scl_usable_percentage
+    )
 
     # ---------------------------------------------------------
-    # 10. Create plantation boundary mask
+    # 11. Create plantation boundary mask
     # ---------------------------------------------------------
 
     plantation_mask = geometry_mask(
         [plantation_utm.__geo_interface__],
         transform=transform,
         invert=True,
-        out_shape=(dataset.height, dataset.width)
+        out_shape=(
+            dataset_height,
+            dataset_width
+        )
     )
 
-    print("\nPlantation boundary mask created successfully!")
+    print(
+        "\nPlantation boundary mask "
+        "created successfully!"
+    )
 
-    plantation_pixels = np.sum(plantation_mask)
+    plantation_pixels = np.sum(
+        plantation_mask
+    )
 
-    print("Pixels inside plantation:", plantation_pixels)
+    print(
+        "Pixels inside plantation:",
+        plantation_pixels
+    )
 
     # ---------------------------------------------------------
-    # 11. Combine quality masks
+    # 12. Combine quality masks
     # ---------------------------------------------------------
 
     valid_mask = (
@@ -319,26 +414,61 @@ def process_sentinel2_scene(scene_id):
         plantation_mask
     )
 
-    valid_pixels = np.sum(valid_mask)
-    invalid_pixels = total_pixels - valid_pixels
-
-    valid_percentage = (
-        valid_pixels / total_pixels * 100
+    valid_pixels = np.sum(
+        valid_mask
     )
 
-    print("\nCombined mask created successfully!")
+    invalid_pixels = (
+        total_pixels -
+        valid_pixels
+    )
 
-    print("Valid plantation pixels:", valid_pixels)
-    print("Invalid pixels:", invalid_pixels)
-    print("Valid percentage:", valid_percentage)
+    valid_percentage = (
+        valid_pixels /
+        total_pixels *
+        100
+    )
+
+    print(
+        "\nCombined mask created successfully!"
+    )
+
+    print(
+        "Valid plantation pixels:",
+        valid_pixels
+    )
+
+    print(
+        "Invalid pixels:",
+        invalid_pixels
+    )
+
+    print(
+        "Valid percentage:",
+        valid_percentage
+    )
 
     # ---------------------------------------------------------
-    # 12. Apply combined mask to spectral bands
+    # 13. Apply combined mask to spectral bands
     # ---------------------------------------------------------
 
-    blue = np.where(valid_mask, blue, np.nan)
-    green = np.where(valid_mask, green, np.nan)
-    red = np.where(valid_mask, red, np.nan)
+    blue = np.where(
+        valid_mask,
+        blue,
+        np.nan
+    )
+
+    green = np.where(
+        valid_mask,
+        green,
+        np.nan
+    )
+
+    red = np.where(
+        valid_mask,
+        red,
+        np.nan
+    )
 
     red_edge_1 = np.where(
         valid_mask,
@@ -358,8 +488,17 @@ def process_sentinel2_scene(scene_id):
         np.nan
     )
 
-    nir = np.where(valid_mask, nir, np.nan)
-    nir_2 = np.where(valid_mask, nir_2, np.nan)
+    nir = np.where(
+        valid_mask,
+        nir,
+        np.nan
+    )
+
+    nir_2 = np.where(
+        valid_mask,
+        nir_2,
+        np.nan
+    )
 
     swir_1 = np.where(
         valid_mask,
@@ -373,10 +512,13 @@ def process_sentinel2_scene(scene_id):
         np.nan
     )
 
-    print("\nCombined mask applied to spectral bands!")
+    print(
+        "\nCombined mask applied "
+        "to spectral bands!"
+    )
 
     # ---------------------------------------------------------
-    # 13. Calculate vegetation indices
+    # 14. Calculate vegetation indices
     # ---------------------------------------------------------
 
     ndvi = calculate_ndvi(
@@ -405,14 +547,18 @@ def process_sentinel2_scene(scene_id):
         nir
     )
 
-    print("\nVegetation indices calculated successfully!")
+    print(
+        "\nVegetation indices "
+        "calculated successfully!"
+    )
 
     # ---------------------------------------------------------
-    # 14. Return results
+    # 15. Return results
     # ---------------------------------------------------------
 
     return {
         "scene_id": scene_id,
+        "scene_date": str(scene_date),
         "ndvi": ndvi,
         "ndre": ndre,
         "gndvi": gndvi,
@@ -421,8 +567,8 @@ def process_sentinel2_scene(scene_id):
         "valid_mask": valid_mask,
         "usable_percentage": valid_percentage,
         "transform": transform,
-        "width": width,
-        "height": height,
+        "width": dataset_width,
+        "height": dataset_height,
     }
 
 
@@ -433,19 +579,31 @@ def process_sentinel2_scene(scene_id):
 if __name__ == "__main__":
 
     scene_id = (
-        "S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_"
-        "20260808T045442"
+        "S2B_MSIL2A_20260815T024529_N0512_R132_T49MEV_"
+        "20260815T045442"
     )
 
-    results = process_sentinel2_scene(scene_id)
+    results = process_sentinel2_scene(
+        scene_id
+    )
 
     print("\nFinal results:")
 
-    print("Scene:", results["scene_id"])
+    print(
+        "Scene:",
+        results["scene_id"]
+    )
+
+    print(
+        "Scene date:",
+        results["scene_date"]
+    )
 
     print(
         "Valid plantation pixels:",
-        np.sum(results["valid_mask"])
+        np.sum(
+            results["valid_mask"]
+        )
     )
 
     print(
@@ -455,13 +613,49 @@ if __name__ == "__main__":
 
     print("\nImage dimensions:")
 
-    print("Width:", results["width"])
-    print("Height:", results["height"])
+    print(
+        "Width:",
+        results["width"]
+    )
+
+    print(
+        "Height:",
+        results["height"]
+    )
 
     print("\nMean vegetation indices:")
 
-    print("NDVI:", np.nanmean(results["ndvi"]))
-    print("NDRE:", np.nanmean(results["ndre"]))
-    print("GNDVI:", np.nanmean(results["gndvi"]))
-    print("NDMI:", np.nanmean(results["ndmi"]))
-    print("EVI:", np.nanmean(results["evi"]))
+    print(
+        "NDVI:",
+        np.nanmean(
+            results["ndvi"]
+        )
+    )
+
+    print(
+        "NDRE:",
+        np.nanmean(
+            results["ndre"]
+        )
+    )
+
+    print(
+        "GNDVI:",
+        np.nanmean(
+            results["gndvi"]
+        )
+    )
+
+    print(
+        "NDMI:",
+        np.nanmean(
+            results["ndmi"]
+        )
+    )
+
+    print(
+        "EVI:",
+        np.nanmean(
+            results["evi"]
+        )
+    )
