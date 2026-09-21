@@ -308,9 +308,54 @@ with rasterio.open(BytesIO(response.content)) as dataset:
     print("Image dtype:", data.dtype)
 
 
+# Separate bands
+blue = data[0]
+green = data[1]
+red = data[2]
+red_edge_1 = data[3]
+red_edge_2 = data[4]
+red_edge_3 = data[5]
+nir = data[6]
+nir_2 = data[7]
+swir_1 = data[8]
+swir_2 = data[9]
+
 # Separate SCL band
 scl = data[10]
 
 print("\nSCL statistics:")
 print("Minimum:", np.nanmin(scl))
 print("Maximum:", np.nanmax(scl))
+
+# Create a mask for usable pixels
+# SCL classes 4 and 5 are vegetation and not-vegetated.
+# We remove cloud shadows, clouds, cirrus, and other invalid classes.
+
+valid_mask = np.isin(
+    scl,
+    [4, 5]
+)
+
+# Apply the SCL mask to all spectral bands
+blue = np.where(valid_mask, blue, np.nan)
+green = np.where(valid_mask, green, np.nan)
+red = np.where(valid_mask, red, np.nan)
+red_edge_1 = np.where(valid_mask, red_edge_1, np.nan)
+red_edge_2 = np.where(valid_mask, red_edge_2, np.nan)
+red_edge_3 = np.where(valid_mask, red_edge_3, np.nan)
+nir = np.where(valid_mask, nir, np.nan)
+nir_2 = np.where(valid_mask, nir_2, np.nan)
+swir_1 = np.where(valid_mask, swir_1, np.nan)
+swir_2 = np.where(valid_mask, swir_2, np.nan)
+
+print("\nSCL mask applied to spectral bands!")
+
+print("\nSCL mask created successfully!")
+
+print("Total pixels:", valid_mask.size)
+print("Usable pixels:", np.sum(valid_mask))
+print("Masked pixels:", np.sum(~valid_mask))
+print(
+    "Usable percentage:",
+    np.sum(valid_mask) / valid_mask.size * 100
+)
