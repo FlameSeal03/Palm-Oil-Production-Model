@@ -348,9 +348,9 @@ nir_2 = np.where(valid_mask, nir_2, np.nan)
 swir_1 = np.where(valid_mask, swir_1, np.nan)
 swir_2 = np.where(valid_mask, swir_2, np.nan)
 
-print("\nSCL mask applied to spectral bands!")
-
 print("\nSCL mask created successfully!")
+
+print("\nSCL mask applied to spectral bands!")
 
 print("Total pixels:", valid_mask.size)
 print("Usable pixels:", np.sum(valid_mask))
@@ -359,3 +359,52 @@ print(
     "Usable percentage:",
     np.sum(valid_mask) / valid_mask.size * 100
 )
+
+# Calculate vegetation indices using the masked bands
+
+# NDVI
+ndvi = np.where(
+    (nir + red) != 0,
+    (nir - red) / (nir + red),
+    np.nan
+)
+
+# NDRE
+ndre = np.where(
+    (nir_2 + red_edge_1) != 0,
+    (nir_2 - red_edge_1) / (nir_2 + red_edge_1),
+    np.nan
+)
+
+# GNDVI
+gndvi = np.where(
+    (nir + green) != 0,
+    (nir - green) / (nir + green),
+    np.nan
+)
+
+# NDMI
+ndmi = np.where(
+    (nir + swir_1) != 0,
+    (nir - swir_1) / (nir + swir_1),
+    np.nan
+)
+
+# EVI
+evi_denominator = nir + 6 * red - 7.5 * blue + 1
+
+evi = np.where(
+    evi_denominator != 0,
+    2.5 * (nir - red) / evi_denominator,
+    np.nan
+)
+
+print("\nVegetation indices calculated successfully!")
+
+print("\nAugust 2026 test scene statistics:")
+
+print("NDVI mean:", np.nanmean(ndvi))
+print("NDRE mean:", np.nanmean(ndre))
+print("GNDVI mean:", np.nanmean(gndvi))
+print("NDMI mean:", np.nanmean(ndmi))
+print("EVI mean:", np.nanmean(evi))
