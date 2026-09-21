@@ -3,6 +3,8 @@ from config.settings import GEOJSON_PATH, START_DATE, END_DATE
 import geopandas as gpd
 from pystac_client import Client
 from collections import defaultdict
+from datetime import datetime, timedelta
+import time
 
 MAX_CLOUD_COVER = 80
 
@@ -21,42 +23,97 @@ print("Plantation geometry loaded successfully.")
 print("Geometry type:", plantation.geometry.geom_type)
 
 
-# Search for Sentinel-2 imagery
-search = catalog.search(
-    collections=["sentinel-2-l2a"],
-    intersects=plantation_geometry,
-    datetime=f"{START_DATE}/{END_DATE}",
-    max_items=100,
-)
-
-items = list(search.items())
-
-print(f"\nFound {len(items)} Sentinel-2 scenes.")
-
-
-# Group scenes by month
+# Search for Sentinel-2 imagery month by month
 monthly_scenes = defaultdict(list)
 
-for item in items:
-    date = item.datetime
-    month = date.strftime("%Y-%m")
-    cloud_cover = item.properties.get("eo:cloud_cover")
+start = datetime.fromisoformat(START_DATE)
+end = datetime.fromisoformat(END_DATE)
 
-    if cloud_cover is not None and cloud_cover <= MAX_CLOUD_COVER:
-        monthly_scenes[month].append({
-            "date": date,
-            "cloud_cover": item.properties.get("eo:cloud_cover"),
-            "id": item.id,
-        })
+current = start.replace(day=1)
+
+total_scenes = 0
+
+while current <= end:
+
+    # First day of current month
+    month_start = current
+
+    # First day of next month
+    if current.month == 12:
+        next_month = current.replace(
+            year=current.year + 1,
+            month=1
+        )
+    else:
+        next_month = current.replace(
+            month=current.month + 1
+        )
+
+    month_end = next_month - timedelta(seconds=1)
+
+    # Do not search past END_DATE
+    if month_end > end:
+        month_end = end
+
+    month_name = current.strftime("%Y-%m")
+
+    print(f"\nSearching {month_name}...")
+
+    search = catalog.search(
+        collections=["sentinel-2-l2a"],
+        intersects=plantation_geometry,
+        datetime=(
+            f"{month_start.isoformat()}Z/"
+            f"{month_end.isoformat()}Z"
+        ),
+        max_items=100,
+    )
+
+    month_items = list(search.items())
+
+    time.sleep(3)
+
+    print(f"Found {len(month_items)} scenes.")
+
+    total_scenes += len(month_items)
+
+    # Store scenes that pass the cloud threshold
+    for item in month_items:
+
+        cloud_cover = item.properties.get("eo:cloud_cover")
+
+        if cloud_cover is not None and cloud_cover <= MAX_CLOUD_COVER:
+
+            monthly_scenes[month_name].append({
+                "date": item.datetime,
+                "cloud_cover": cloud_cover,
+                "id": item.id,
+            })
+
+    current = next_month
+
+
+print(f"\nTotal scenes found: {total_scenes}")
 
 
 # Sort each month by cloud cover
 for month in monthly_scenes:
+
     monthly_scenes[month].sort(
-        key=lambda scene: scene["cloud_cover"]
-        if scene["cloud_cover"] is not None
-        else 999
+        key=lambda x: x["cloud_cover"]
     )
+
+    print(f"\n{month}:")
+
+    for item in monthly_scenes[month]:
+
+        print(
+            item["date"],
+            "| Cloud:",
+            item["cloud_cover"],
+            "|",
+            item["id"]
+        )
 
 
 # Display results
@@ -145,25 +202,17 @@ evalscript = """
 function setup() {
     return {
         input: [
-            {
-                bands: [
-                    "B02",
-                    "B03",
-                    "B04",
-                    "B05",
-                    "B06",
-                    "B07",
-                    "B08",
-                    "B8A",
-                    "B11",
-                    "B12"
-                ],
-                units: "REFLECTANCE"
-            },
-            {
-                bands: ["SCL"],
-                units: "DN"
-            }
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B8A",
+            "B11",
+            "B12",
+            "SCL"
         ],
         output: {
             bands: 11,
@@ -206,7 +255,7 @@ request_body = {
                     "timeRange": {
                         "from": "2026-08-08T00:00:00Z",
                         "to": "2026-08-09T00:00:00Z"
-                    },
+                    }
                 }
             }
         ]
