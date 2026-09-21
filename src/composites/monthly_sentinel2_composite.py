@@ -6,6 +6,13 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import time
 
+# indice functions
+from src.indices.ndvi import calculate_ndvi
+from src.indices.ndre import calculate_ndre
+from src.indices.gndvi import calculate_gndvi
+from src.indices.ndmi import calculate_ndmi
+from src.indices.evi import calculate_evi
+
 MAX_CLOUD_COVER = 80
 
 # Connect to Copernicus Data Space
@@ -360,44 +367,13 @@ print(
     np.sum(valid_mask) / valid_mask.size * 100
 )
 
-# Calculate vegetation indices using the masked bands
+# Calculate vegetation indices using the reusable functions
 
-# NDVI
-ndvi = np.where(
-    (nir + red) != 0,
-    (nir - red) / (nir + red),
-    np.nan
-)
-
-# NDRE
-ndre = np.where(
-    (nir_2 + red_edge_1) != 0,
-    (nir_2 - red_edge_1) / (nir_2 + red_edge_1),
-    np.nan
-)
-
-# GNDVI
-gndvi = np.where(
-    (nir + green) != 0,
-    (nir - green) / (nir + green),
-    np.nan
-)
-
-# NDMI
-ndmi = np.where(
-    (nir + swir_1) != 0,
-    (nir - swir_1) / (nir + swir_1),
-    np.nan
-)
-
-# EVI
-evi_denominator = nir + 6 * red - 7.5 * blue + 1
-
-evi = np.where(
-    evi_denominator != 0,
-    2.5 * (nir - red) / evi_denominator,
-    np.nan
-)
+ndvi = calculate_ndvi(red, nir)
+ndre = calculate_ndre(red_edge_1, nir_2)
+gndvi = calculate_gndvi(green, nir)
+ndmi = calculate_ndmi(nir, swir_1)
+evi = calculate_evi(blue, red, nir)
 
 print("\nVegetation indices calculated successfully!")
 
