@@ -1,0 +1,16 @@
+# Run all vegetation indices
+
+# NDVI - general vegetation vigor
+python -m src.indices.ndvi
+
+# NDRE - red-edge vegetation/chlorophyll signal
+python -m src.indices.ndre
+
+# GNDVI - green/NIR vegetation signal
+python -m src.indices.gndvi
+
+# NDMI - vegetation moisture
+python -m src.indices.ndmi
+
+# EVI - vegetation vigor in dense vegetation
+python -m src.indices.evi

@@ -1,4 +1,4 @@
-GEOJSON_PATH = "data/boundaries/PT.geojson"
+GEOJSON_PATH = "data/boundaries/AGRO.geojson"
 
 # If wanted to get a specific days info
 IMAGE_DATE = "2026-08-08"
