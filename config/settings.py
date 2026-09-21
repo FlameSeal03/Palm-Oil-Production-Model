@@ -1,3 +1,6 @@
+# Choose which planation to get data from
+# Keep "data/boundaries/" and change last part for certain planation
+# Check planation_names file for what to put in
 GEOJSON_PATH = "data/boundaries/AGRO.geojson"
 
 # If wanted to get a specific days info

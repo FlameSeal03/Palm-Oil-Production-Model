@@ -14,3 +14,6 @@ python -m src.indices.ndmi
 
 # EVI - vegetation vigor in dense vegetation
 python -m src.indices.evi
+
+# Finds 
+python -m src.composites.monthly_sentinel2_composite
