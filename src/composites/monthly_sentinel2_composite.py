@@ -222,11 +222,11 @@ def create_monthly_composite(
     # ---------------------------------------------------------
     # Stack scene arrays
     # ---------------------------------------------------------
-
+    '''
     print(
         "\nStacking monthly scene arrays..."
     )
-
+    '''
     ndvi_stack = np.stack(
         ndvi_arrays,
         axis=0,
@@ -264,11 +264,11 @@ def create_monthly_composite(
     # ---------------------------------------------------------
     # Calculate pixel-wise monthly medians
     # ---------------------------------------------------------
-
+    '''
     print(
         "Calculating monthly pixel-wise medians..."
     )
-
+    '''
     monthly_ndvi = np.nanmedian(
         ndvi_stack,
         axis=0,
@@ -293,11 +293,11 @@ def create_monthly_composite(
         evi_stack,
         axis=0,
     )
-
+    '''
     print(
         "Monthly composite created successfully!"
     )
-
+    '''
     # ---------------------------------------------------------
     # Return composite
     # ---------------------------------------------------------
@@ -407,6 +407,15 @@ def print_composite_statistics(
         np.nanstd(composite["evi"]),
     )
 
+    observation_count = composite[
+        "observation_count"
+    ]
+
+    print(
+        " Number of scenes:",
+        np.nanmax(observation_count),
+    )
+    '''
     # ---------------------------------------------------------
     # Observation coverage
     # ---------------------------------------------------------
@@ -433,6 +442,8 @@ def print_composite_statistics(
         "  Mean:",
         np.nanmean(observation_count),
     )
+
+    '''
 
 class Tee:
     """
@@ -517,10 +528,6 @@ if __name__ == "__main__":
                 ),
             )
 
-            print(
-                "Log file:",
-                log_file,
-            )
 
             # -------------------------------------------------
             # Load STAC catalog

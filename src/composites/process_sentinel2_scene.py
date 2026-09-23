@@ -65,8 +65,8 @@ def process_sentinel2_scene(scene_id):
     10. Returns the index arrays and quality information.
     """
 
-    print("\nProcessing scene:")
-    print(scene_id)
+    #print("\nProcessing scene:")
+    #print(scene_id)
 
     # ---------------------------------------------------------
     # 1. Determine scene acquisition date
@@ -116,7 +116,7 @@ def process_sentinel2_scene(scene_id):
 
     access_token = token_response.json()["access_token"]
 
-    print("Sentinel Hub authentication successful!")
+    #print("Sentinel Hub authentication successful!")
 
     # ---------------------------------------------------------
     # 4. Load plantation geometry
@@ -133,8 +133,8 @@ def process_sentinel2_scene(scene_id):
         max_y,
     )
 
-    print("\nUTM bounding box:")
-    print(bbox_utm)
+    #print("\nUTM bounding box:")
+    #print(bbox_utm)
 
     # ---------------------------------------------------------
     # 5. Calculate image dimensions
@@ -154,10 +154,10 @@ def process_sentinel2_scene(scene_id):
         )
     )
 
-    print("\nImage dimensions:")
-    print("Width:", width)
-    print("Height:", height)
-    print("Resolution:", resolution, "meters")
+    #print("\nImage dimensions:")
+    #print("Width:", width)
+    #print("Height:", height)
+    #print("Resolution:", resolution, "meters")
 
     # ---------------------------------------------------------
     # 6. Sentinel Hub Process API request
@@ -288,8 +288,8 @@ def process_sentinel2_scene(scene_id):
 
     response.raise_for_status()
 
-    print("\nSentinel Hub request successful!")
-    print("Status code:", response.status_code)
+    #print("\nSentinel Hub request successful!")
+    #print("Status code:", response.status_code)
 
     # ---------------------------------------------------------
     # 8. Read returned TIFF
@@ -301,8 +301,8 @@ def process_sentinel2_scene(scene_id):
 
         data = dataset.read()
 
-        print("Image shape:", data.shape)
-        print("Image dtype:", data.dtype)
+        #print("Image shape:", data.shape)
+        #print("Image dtype:", data.dtype)
 
         transform = dataset.transform
 
@@ -338,7 +338,7 @@ def process_sentinel2_scene(scene_id):
         [4, 5]
     )
 
-    print("\nSCL mask created successfully!")
+    #print("\nSCL mask created successfully!")
 
     total_pixels = scl_valid_mask.size
 
@@ -356,7 +356,7 @@ def process_sentinel2_scene(scene_id):
         total_pixels *
         100
     )
-
+    '''
     print(
         "Total pixels:",
         total_pixels
@@ -376,7 +376,7 @@ def process_sentinel2_scene(scene_id):
         "SCL usable percentage:",
         scl_usable_percentage
     )
-
+    '''
     # ---------------------------------------------------------
     # 11. Create plantation boundary mask
     # ---------------------------------------------------------
@@ -390,20 +390,42 @@ def process_sentinel2_scene(scene_id):
             dataset_width
         )
     )
-
+    '''
     print(
         "\nPlantation boundary mask "
         "created successfully!"
     )
-
+    '''
     plantation_pixels = np.sum(
         plantation_mask
     )
-
+    '''
     print(
         "Pixels inside plantation:",
         plantation_pixels
     )
+
+    print("\nSCL classes inside plantation:")
+    '''
+    plantation_scl = scl[
+        plantation_mask
+    ]
+
+    plantation_scl_classes, plantation_scl_counts = np.unique(
+        plantation_scl,
+        return_counts=True
+    )
+
+    for scl_class, count in zip(
+        plantation_scl_classes,
+        plantation_scl_counts
+    ):
+        print(
+            "  SCL class:",
+            scl_class,
+            "Pixels:",
+            count
+        )
 
     # ---------------------------------------------------------
     # 12. Combine quality masks
@@ -428,7 +450,7 @@ def process_sentinel2_scene(scene_id):
         total_pixels *
         100
     )
-
+    '''
     print(
         "\nCombined mask created successfully!"
     )
@@ -447,6 +469,8 @@ def process_sentinel2_scene(scene_id):
         "Valid percentage:",
         valid_percentage
     )
+
+    '''
 
     # ---------------------------------------------------------
     # 13. Apply combined mask to spectral bands
@@ -511,12 +535,12 @@ def process_sentinel2_scene(scene_id):
         swir_2,
         np.nan
     )
-
+    '''
     print(
         "\nCombined mask applied "
         "to spectral bands!"
     )
-
+    '''
     # ---------------------------------------------------------
     # 14. Calculate vegetation indices
     # ---------------------------------------------------------
