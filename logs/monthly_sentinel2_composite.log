@@ -1,0 +1,1921 @@
+
+
+========================================
+Monthly Sentinel-2 Composite Run
+========================================
+Run started: 2026-09-23 16:48:12
+Log file: logs/monthly_sentinel2_composite.log
+Connected to Copernicus Data Space.
+Plantation geometry loaded.
+Geometry type: Polygon
+
+Scenes found between 2026-01-01 and 2026-02-01: 5
+Scenes retained after cloud filtering: 2
+   2026-01-10 77.93% S2B_MSIL2A_20260110T025009_N0511_R132_T49MEV_20260110T062618
+   2026-01-30 78.29% S2B_MSIL2A_20260130T024839_N0511_R132_T49MEV_20260130T062930
+
+Creating composite for 2026-01
+
+----------------------------------------
+Processing scene 1/2
+Date: 2026-01-10
+Cloud cover: 77.93%
+Scene ID: S2B_MSIL2A_20260110T025009_N0511_R132_T49MEV_20260110T062618
+
+Processing scene:
+S2B_MSIL2A_20260110T025009_N0511_R132_T49MEV_20260110T062618
+Scene date: 2026-01-10
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 0
+SCL masked pixels: 64480
+SCL usable percentage: 0.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 0
+Invalid pixels: 64480
+Valid percentage: 0.0
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/2
+Date: 2026-01-30
+Cloud cover: 78.29%
+Scene ID: S2B_MSIL2A_20260130T024839_N0511_R132_T49MEV_20260130T062930
+
+Processing scene:
+S2B_MSIL2A_20260130T024839_N0511_R132_T49MEV_20260130T062930
+Scene date: 2026-01-30
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 0
+SCL masked pixels: 64480
+SCL usable percentage: 0.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 0
+Invalid pixels: 64480
+Valid percentage: 0.0
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-01
+========================================
+
+NDVI:
+  Mean: nan
+  Median: nan
+  Standard deviation: nan
+
+NDRE:
+  Mean: nan
+  Median: nan
+  Standard deviation: nan
+
+GNDVI:
+  Mean: nan
+  Median: nan
+  Standard deviation: nan
+
+NDMI:
+  Mean: nan
+  Median: nan
+  Standard deviation: nan
+
+EVI:
+  Mean: nan
+  Median: nan
+  Standard deviation: nan
+
+Observation count:
+  Minimum: 0
+  Maximum: 0
+  Mean: 0.0
+
+Scenes found between 2026-02-01 and 2026-03-01: 6
+Scenes retained after cloud filtering: 2
+   2026-02-14 68.40% S2C_MSIL2A_20260214T024821_N0512_R132_T49MEV_20260214T061309
+   2026-03-01 49.33% S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+
+Creating composite for 2026-02
+
+----------------------------------------
+Processing scene 1/2
+Date: 2026-02-14
+Cloud cover: 68.40%
+Scene ID: S2C_MSIL2A_20260214T024821_N0512_R132_T49MEV_20260214T061309
+
+Processing scene:
+S2C_MSIL2A_20260214T024821_N0512_R132_T49MEV_20260214T061309
+Scene date: 2026-02-14
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 0
+SCL masked pixels: 64480
+SCL usable percentage: 0.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 0
+Invalid pixels: 64480
+Valid percentage: 0.0
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/2
+Date: 2026-03-01
+Cloud cover: 49.33%
+Scene ID: S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+
+Processing scene:
+S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+Scene date: 2026-03-01
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 57922
+SCL masked pixels: 6558
+SCL usable percentage: 89.82940446650124
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 50423
+Invalid pixels: 14057
+Valid percentage: 78.19944168734492
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-02
+========================================
+
+NDVI:
+  Mean: 0.70293355
+  Median: 0.7459598
+  Standard deviation: 0.13805974
+
+NDRE:
+  Mean: 0.5155767
+  Median: 0.5259396
+  Standard deviation: 0.10060551
+
+GNDVI:
+  Mean: 0.6347676
+  Median: 0.6541646
+  Standard deviation: 0.09166521
+
+NDMI:
+  Mean: 0.14530008
+  Median: 0.16842103
+  Standard deviation: 0.1557798
+
+EVI:
+  Mean: 0.49577993
+  Median: 0.51807326
+  Standard deviation: 0.11655121
+
+Observation count:
+  Minimum: 0
+  Maximum: 1
+  Mean: 0.7819944168734492
+
+Scenes found between 2026-03-01 and 2026-04-01: 7
+Scenes retained after cloud filtering: 4
+   2026-03-01 49.33% S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+   2026-03-11 67.76% S2B_MSIL2A_20260311T024529_N0512_R132_T49MEV_20260311T062751
+   2026-03-21 74.26% S2B_MSIL2A_20260321T024539_N0512_R132_T49MEV_20260321T062740
+   2026-03-26 73.34% S2C_MSIL2A_20260326T024551_N0512_R132_T49MEV_20260326T062512
+
+Creating composite for 2026-03
+
+----------------------------------------
+Processing scene 1/4
+Date: 2026-03-01
+Cloud cover: 49.33%
+Scene ID: S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+
+Processing scene:
+S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+Scene date: 2026-03-01
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 57922
+SCL masked pixels: 6558
+SCL usable percentage: 89.82940446650124
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 50423
+Invalid pixels: 14057
+Valid percentage: 78.19944168734492
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/4
+Date: 2026-03-11
+Cloud cover: 67.76%
+Scene ID: S2B_MSIL2A_20260311T024529_N0512_R132_T49MEV_20260311T062751
+
+Processing scene:
+S2B_MSIL2A_20260311T024529_N0512_R132_T49MEV_20260311T062751
+Scene date: 2026-03-11
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 8
+SCL masked pixels: 64472
+SCL usable percentage: 0.012406947890818858
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 0
+Invalid pixels: 64480
+Valid percentage: 0.0
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/4
+Date: 2026-03-21
+Cloud cover: 74.26%
+Scene ID: S2B_MSIL2A_20260321T024539_N0512_R132_T49MEV_20260321T062740
+
+Processing scene:
+S2B_MSIL2A_20260321T024539_N0512_R132_T49MEV_20260321T062740
+Scene date: 2026-03-21
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 16512
+SCL masked pixels: 47968
+SCL usable percentage: 25.607940446650122
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 15609
+Invalid pixels: 48871
+Valid percentage: 24.207506203473944
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 4/4
+Date: 2026-03-26
+Cloud cover: 73.34%
+Scene ID: S2C_MSIL2A_20260326T024551_N0512_R132_T49MEV_20260326T062512
+
+Processing scene:
+S2C_MSIL2A_20260326T024551_N0512_R132_T49MEV_20260326T062512
+Scene date: 2026-03-26
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 38486
+SCL masked pixels: 25994
+SCL usable percentage: 59.68672456575682
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 36137
+Invalid pixels: 28343
+Valid percentage: 56.043734491315135
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-03
+========================================
+
+NDVI:
+  Mean: 0.69229746
+  Median: 0.7363897
+  Standard deviation: 0.14525671
+
+NDRE:
+  Mean: 0.49500245
+  Median: 0.50681746
+  Standard deviation: 0.103169255
+
+GNDVI:
+  Mean: 0.6206547
+  Median: 0.64243054
+  Standard deviation: 0.099081695
+
+NDMI:
+  Mean: 0.16282511
+  Median: 0.19096425
+  Standard deviation: 0.15848482
+
+EVI:
+  Mean: 0.52367824
+  Median: 0.54613745
+  Standard deviation: 0.13177536
+
+Observation count:
+  Minimum: 0
+  Maximum: 3
+  Mean: 1.58450682382134
+
+Scenes found between 2026-04-01 and 2026-05-01: 7
+Scenes retained after cloud filtering: 3
+   2026-04-15 46.52% S2C_MSIL2A_20260415T024521_N0512_R132_T49MEV_20260415T074409
+   2026-04-17 44.16% S2A_MSIL2A_20260417T025201_N0512_R132_T49MEV_20260417T110112
+   2026-04-20 45.54% S2B_MSIL2A_20260420T024519_N0512_R132_T49MEV_20260420T045505
+
+Creating composite for 2026-04
+
+----------------------------------------
+Processing scene 1/3
+Date: 2026-04-15
+Cloud cover: 46.52%
+Scene ID: S2C_MSIL2A_20260415T024521_N0512_R132_T49MEV_20260415T074409
+
+Processing scene:
+S2C_MSIL2A_20260415T024521_N0512_R132_T49MEV_20260415T074409
+Scene date: 2026-04-15
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 3924
+SCL masked pixels: 60556
+SCL usable percentage: 6.08560794044665
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 3482
+Invalid pixels: 60998
+Valid percentage: 5.400124069478908
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/3
+Date: 2026-04-17
+Cloud cover: 44.16%
+Scene ID: S2A_MSIL2A_20260417T025201_N0512_R132_T49MEV_20260417T110112
+
+Processing scene:
+S2A_MSIL2A_20260417T025201_N0512_R132_T49MEV_20260417T110112
+Scene date: 2026-04-17
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 20185
+SCL masked pixels: 44295
+SCL usable percentage: 31.304280397022332
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 18600
+Invalid pixels: 45880
+Valid percentage: 28.846153846153843
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/3
+Date: 2026-04-20
+Cloud cover: 45.54%
+Scene ID: S2B_MSIL2A_20260420T024519_N0512_R132_T49MEV_20260420T045505
+
+Processing scene:
+S2B_MSIL2A_20260420T024519_N0512_R132_T49MEV_20260420T045505
+Scene date: 2026-04-20
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 14648
+SCL masked pixels: 49832
+SCL usable percentage: 22.71712158808933
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 12255
+Invalid pixels: 52225
+Valid percentage: 19.00589330024814
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-04
+========================================
+
+NDVI:
+  Mean: 0.6669508
+  Median: 0.7058803
+  Standard deviation: 0.1463212
+
+NDRE:
+  Mean: 0.49145418
+  Median: 0.5098947
+  Standard deviation: 0.09763122
+
+GNDVI:
+  Mean: 0.58743334
+  Median: 0.61155206
+  Standard deviation: 0.10709965
+
+NDMI:
+  Mean: 0.19618918
+  Median: 0.2145074
+  Standard deviation: 0.13846092
+
+EVI:
+  Mean: 0.5473773
+  Median: 0.57377404
+  Standard deviation: 0.15114376
+
+Observation count:
+  Minimum: 0
+  Maximum: 3
+  Mean: 0.532521712158809
+
+Scenes found between 2026-05-01 and 2026-06-01: 8
+Scenes retained after cloud filtering: 4
+   2026-05-07 79.40% S2A_MSIL2A_20260507T025151_N0512_R132_T49MEV_20260508T100113
+   2026-05-20 45.94% S2B_MSIL2A_20260520T024519_N0512_R132_T49MEV_20260520T054404
+   2026-05-25 65.53% S2C_MSIL2A_20260525T024521_N0512_R132_T49MEV_20260525T052015
+   2026-05-30 59.58% S2B_MSIL2A_20260530T024519_N0512_R132_T49MEV_20260530T063600
+
+Creating composite for 2026-05
+
+----------------------------------------
+Processing scene 1/4
+Date: 2026-05-07
+Cloud cover: 79.40%
+Scene ID: S2A_MSIL2A_20260507T025151_N0512_R132_T49MEV_20260508T100113
+
+Processing scene:
+S2A_MSIL2A_20260507T025151_N0512_R132_T49MEV_20260508T100113
+Scene date: 2026-05-07
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 8678
+SCL masked pixels: 55802
+SCL usable percentage: 13.458436724565756
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 8454
+Invalid pixels: 56026
+Valid percentage: 13.111042183622828
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/4
+Date: 2026-05-20
+Cloud cover: 45.94%
+Scene ID: S2B_MSIL2A_20260520T024519_N0512_R132_T49MEV_20260520T054404
+
+Processing scene:
+S2B_MSIL2A_20260520T024519_N0512_R132_T49MEV_20260520T054404
+Scene date: 2026-05-20
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 20229
+SCL masked pixels: 44251
+SCL usable percentage: 31.372518610421835
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 19862
+Invalid pixels: 44618
+Valid percentage: 30.803349875930518
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/4
+Date: 2026-05-25
+Cloud cover: 65.53%
+Scene ID: S2C_MSIL2A_20260525T024521_N0512_R132_T49MEV_20260525T052015
+
+Processing scene:
+S2C_MSIL2A_20260525T024521_N0512_R132_T49MEV_20260525T052015
+Scene date: 2026-05-25
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 6404
+SCL masked pixels: 58076
+SCL usable percentage: 9.931761786600497
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 6223
+Invalid pixels: 58257
+Valid percentage: 9.65105459057072
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 4/4
+Date: 2026-05-30
+Cloud cover: 59.58%
+Scene ID: S2B_MSIL2A_20260530T024519_N0512_R132_T49MEV_20260530T063600
+
+Processing scene:
+S2B_MSIL2A_20260530T024519_N0512_R132_T49MEV_20260530T063600
+Scene date: 2026-05-30
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 29766
+SCL masked pixels: 34714
+SCL usable percentage: 46.16315136476427
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 26069
+Invalid pixels: 38411
+Valid percentage: 40.429590570719604
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-05
+========================================
+
+NDVI:
+  Mean: 0.6776242
+  Median: 0.7152218
+  Standard deviation: 0.14370508
+
+NDRE:
+  Mean: 0.5070795
+  Median: 0.5248742
+  Standard deviation: 0.10324717
+
+GNDVI:
+  Mean: 0.59254044
+  Median: 0.6144527
+  Standard deviation: 0.105290554
+
+NDMI:
+  Mean: 0.20956333
+  Median: 0.22943035
+  Standard deviation: 0.13629544
+
+EVI:
+  Mean: 0.54077375
+  Median: 0.55641663
+  Standard deviation: 0.1857192
+
+Observation count:
+  Minimum: 0
+  Maximum: 4
+  Mean: 0.9399503722084367
+
+Scenes found between 2026-06-01 and 2026-07-01: 7
+Scenes retained after cloud filtering: 5
+   2026-06-04 66.34% S2C_MSIL2A_20260604T024521_N0512_R132_T49MEV_20260604T063510
+   2026-06-09 30.71% S2B_MSIL2A_20260609T024529_N0512_R132_T49MEV_20260609T062750
+   2026-06-19 55.94% S2B_MSIL2A_20260619T024529_N0512_R132_T49MEV_20260619T054525
+   2026-06-24 55.68% S2C_MSIL2A_20260624T024531_N0512_R132_T49MEV_20260624T063612
+   2026-06-29 51.36% S2B_MSIL2A_20260629T024529_N0512_R132_T49MEV_20260629T062331
+
+Creating composite for 2026-06
+
+----------------------------------------
+Processing scene 1/5
+Date: 2026-06-04
+Cloud cover: 66.34%
+Scene ID: S2C_MSIL2A_20260604T024521_N0512_R132_T49MEV_20260604T063510
+
+Processing scene:
+S2C_MSIL2A_20260604T024521_N0512_R132_T49MEV_20260604T063510
+Scene date: 2026-06-04
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 0
+SCL masked pixels: 64480
+SCL usable percentage: 0.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 0
+Invalid pixels: 64480
+Valid percentage: 0.0
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/5
+Date: 2026-06-09
+Cloud cover: 30.71%
+Scene ID: S2B_MSIL2A_20260609T024529_N0512_R132_T49MEV_20260609T062750
+
+Processing scene:
+S2B_MSIL2A_20260609T024529_N0512_R132_T49MEV_20260609T062750
+Scene date: 2026-06-09
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 29916
+SCL masked pixels: 34564
+SCL usable percentage: 46.39578163771712
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 25768
+Invalid pixels: 38712
+Valid percentage: 39.96277915632754
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/5
+Date: 2026-06-19
+Cloud cover: 55.94%
+Scene ID: S2B_MSIL2A_20260619T024529_N0512_R132_T49MEV_20260619T054525
+
+Processing scene:
+S2B_MSIL2A_20260619T024529_N0512_R132_T49MEV_20260619T054525
+Scene date: 2026-06-19
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 24985
+SCL masked pixels: 39495
+SCL usable percentage: 38.748449131513645
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 18655
+Invalid pixels: 45825
+Valid percentage: 28.931451612903224
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 4/5
+Date: 2026-06-24
+Cloud cover: 55.68%
+Scene ID: S2C_MSIL2A_20260624T024531_N0512_R132_T49MEV_20260624T063612
+
+Processing scene:
+S2C_MSIL2A_20260624T024531_N0512_R132_T49MEV_20260624T063612
+Scene date: 2026-06-24
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 24511
+SCL masked pixels: 39969
+SCL usable percentage: 38.01333746898263
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 21826
+Invalid pixels: 42654
+Valid percentage: 33.849255583126556
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 5/5
+Date: 2026-06-29
+Cloud cover: 51.36%
+Scene ID: S2B_MSIL2A_20260629T024529_N0512_R132_T49MEV_20260629T062331
+
+Processing scene:
+S2B_MSIL2A_20260629T024529_N0512_R132_T49MEV_20260629T062331
+Scene date: 2026-06-29
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 7824
+SCL masked pixels: 56656
+SCL usable percentage: 12.133995037220844
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 7419
+Invalid pixels: 57061
+Valid percentage: 11.50589330024814
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-06
+========================================
+
+NDVI:
+  Mean: 0.7212462
+  Median: 0.757285
+  Standard deviation: 0.13553676
+
+NDRE:
+  Mean: 0.5182887
+  Median: 0.5281168
+  Standard deviation: 0.093264006
+
+GNDVI:
+  Mean: 0.64113647
+  Median: 0.65901834
+  Standard deviation: 0.09027409
+
+NDMI:
+  Mean: 0.2051789
+  Median: 0.23265994
+  Standard deviation: 0.1457953
+
+EVI:
+  Mean: 0.5478768
+  Median: 0.570182
+  Standard deviation: 0.13704309
+
+Observation count:
+  Minimum: 0
+  Maximum: 4
+  Mean: 1.1424937965260547
+
+Scenes found between 2026-07-01 and 2026-08-01: 8
+Scenes retained after cloud filtering: 7
+   2026-07-04 39.14% S2C_MSIL2A_20260704T024521_N0512_R132_T49MEV_20260704T051909
+   2026-07-09 21.89% S2B_MSIL2A_20260709T024529_N0512_R132_T49MEV_20260709T062503
+   2026-07-14 22.49% S2C_MSIL2A_20260714T024531_N0512_R132_T49MEV_20260714T061101
+   2026-07-19 41.58% S2B_MSIL2A_20260719T024529_N0512_R132_T49MEV_20260719T062615
+   2026-07-24 31.88% S2C_MSIL2A_20260724T024531_N0512_R132_T49MEV_20260724T052014
+   2026-07-26 41.54% S2A_MSIL2A_20260726T025151_N0512_R132_T49MEV_20260726T111510
+   2026-07-29 72.33% S2B_MSIL2A_20260729T024529_N0512_R132_T49MEV_20260729T062922
+
+Creating composite for 2026-07
+
+----------------------------------------
+Processing scene 1/7
+Date: 2026-07-04
+Cloud cover: 39.14%
+Scene ID: S2C_MSIL2A_20260704T024521_N0512_R132_T49MEV_20260704T051909
+
+Processing scene:
+S2C_MSIL2A_20260704T024521_N0512_R132_T49MEV_20260704T051909
+Scene date: 2026-07-04
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 20330
+SCL masked pixels: 44150
+SCL usable percentage: 31.529156327543422
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 15701
+Invalid pixels: 48779
+Valid percentage: 24.350186104218363
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/7
+Date: 2026-07-09
+Cloud cover: 21.89%
+Scene ID: S2B_MSIL2A_20260709T024529_N0512_R132_T49MEV_20260709T062503
+
+Processing scene:
+S2B_MSIL2A_20260709T024529_N0512_R132_T49MEV_20260709T062503
+Scene date: 2026-07-09
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 54864
+SCL masked pixels: 9616
+SCL usable percentage: 85.08684863523574
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 47292
+Invalid pixels: 17188
+Valid percentage: 73.34367245657567
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/7
+Date: 2026-07-14
+Cloud cover: 22.49%
+Scene ID: S2C_MSIL2A_20260714T024531_N0512_R132_T49MEV_20260714T061101
+
+Processing scene:
+S2C_MSIL2A_20260714T024531_N0512_R132_T49MEV_20260714T061101
+Scene date: 2026-07-14
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 64422
+SCL masked pixels: 58
+SCL usable percentage: 99.91004962779157
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 56533
+Invalid pixels: 7947
+Valid percentage: 87.67524813895781
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 4/7
+Date: 2026-07-19
+Cloud cover: 41.58%
+Scene ID: S2B_MSIL2A_20260719T024529_N0512_R132_T49MEV_20260719T062615
+
+Processing scene:
+S2B_MSIL2A_20260719T024529_N0512_R132_T49MEV_20260719T062615
+Scene date: 2026-07-19
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 34864
+SCL masked pixels: 29616
+SCL usable percentage: 54.069478908188586
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 28209
+Invalid pixels: 36271
+Valid percentage: 43.74844913151365
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 5/7
+Date: 2026-07-24
+Cloud cover: 31.88%
+Scene ID: S2C_MSIL2A_20260724T024531_N0512_R132_T49MEV_20260724T052014
+
+Processing scene:
+S2C_MSIL2A_20260724T024531_N0512_R132_T49MEV_20260724T052014
+Scene date: 2026-07-24
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 10865
+SCL masked pixels: 53615
+SCL usable percentage: 16.850186104218363
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 6564
+Invalid pixels: 57916
+Valid percentage: 10.179900744416875
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 6/7
+Date: 2026-07-26
+Cloud cover: 41.54%
+Scene ID: S2A_MSIL2A_20260726T025151_N0512_R132_T49MEV_20260726T111510
+
+Processing scene:
+S2A_MSIL2A_20260726T025151_N0512_R132_T49MEV_20260726T111510
+Scene date: 2026-07-26
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 11704
+SCL masked pixels: 52776
+SCL usable percentage: 18.151364764267992
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 9097
+Invalid pixels: 55383
+Valid percentage: 14.108250620347395
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 7/7
+Date: 2026-07-29
+Cloud cover: 72.33%
+Scene ID: S2B_MSIL2A_20260729T024529_N0512_R132_T49MEV_20260729T062922
+
+Processing scene:
+S2B_MSIL2A_20260729T024529_N0512_R132_T49MEV_20260729T062922
+Scene date: 2026-07-29
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 20094
+SCL masked pixels: 44386
+SCL usable percentage: 31.163151364764268
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 15195
+Invalid pixels: 49285
+Valid percentage: 23.56544665012407
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-07
+========================================
+
+NDVI:
+  Mean: 0.71751815
+  Median: 0.7687967
+  Standard deviation: 0.14883368
+
+NDRE:
+  Mean: 0.5028989
+  Median: 0.5194006
+  Standard deviation: 0.10165925
+
+GNDVI:
+  Mean: 0.6499138
+  Median: 0.67609835
+  Standard deviation: 0.09951792
+
+NDMI:
+  Mean: 0.1673866
+  Median: 0.19851598
+  Standard deviation: 0.16127887
+
+EVI:
+  Mean: 0.48529786
+  Median: 0.5132494
+  Standard deviation: 0.12017165
+
+Observation count:
+  Minimum: 0
+  Maximum: 7
+  Mean: 2.7697115384615385
+
+Scenes found between 2026-08-01 and 2026-09-01: 7
+Scenes retained after cloud filtering: 6
+   2026-08-03 49.64% S2C_MSIL2A_20260803T024531_N0512_R132_T49MEV_20260803T072909
+   2026-08-08 1.13% S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
+   2026-08-15 48.16% S2A_MSIL2A_20260815T025151_N0512_R132_T49MEV_20260815T072713
+   2026-08-18 22.86% S2B_MSIL2A_20260818T024519_N0512_R132_T49MEV_20260818T132602
+   2026-08-23 61.73% S2C_MSIL2A_20260823T024521_N0512_R132_T49MEV_20260823T063508
+   2026-08-28 22.48% S2B_MSIL2A_20260828T024519_N0512_R132_T49MEV_20260828T054422
+
+Creating composite for 2026-08
+
+----------------------------------------
+Processing scene 1/6
+Date: 2026-08-03
+Cloud cover: 49.64%
+Scene ID: S2C_MSIL2A_20260803T024531_N0512_R132_T49MEV_20260803T072909
+
+Processing scene:
+S2C_MSIL2A_20260803T024531_N0512_R132_T49MEV_20260803T072909
+Scene date: 2026-08-03
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 6766
+SCL masked pixels: 57714
+SCL usable percentage: 10.493176178660049
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 6438
+Invalid pixels: 58042
+Valid percentage: 9.984491315136475
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/6
+Date: 2026-08-08
+Cloud cover: 1.13%
+Scene ID: S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
+
+Processing scene:
+S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
+Scene date: 2026-08-08
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 64480
+SCL masked pixels: 0
+SCL usable percentage: 100.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 56581
+Invalid pixels: 7899
+Valid percentage: 87.74968982630273
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/6
+Date: 2026-08-15
+Cloud cover: 48.16%
+Scene ID: S2A_MSIL2A_20260815T025151_N0512_R132_T49MEV_20260815T072713
+
+Processing scene:
+S2A_MSIL2A_20260815T025151_N0512_R132_T49MEV_20260815T072713
+Scene date: 2026-08-15
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 36873
+SCL masked pixels: 27607
+SCL usable percentage: 57.18517369727047
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 30217
+Invalid pixels: 34263
+Valid percentage: 46.86259305210918
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 4/6
+Date: 2026-08-18
+Cloud cover: 22.86%
+Scene ID: S2B_MSIL2A_20260818T024519_N0512_R132_T49MEV_20260818T132602
+
+Processing scene:
+S2B_MSIL2A_20260818T024519_N0512_R132_T49MEV_20260818T132602
+Scene date: 2026-08-18
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 990
+SCL masked pixels: 63490
+SCL usable percentage: 1.5353598014888337
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 980
+Invalid pixels: 63500
+Valid percentage: 1.5198511166253101
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 5/6
+Date: 2026-08-23
+Cloud cover: 61.73%
+Scene ID: S2C_MSIL2A_20260823T024521_N0512_R132_T49MEV_20260823T063508
+
+Processing scene:
+S2C_MSIL2A_20260823T024521_N0512_R132_T49MEV_20260823T063508
+Scene date: 2026-08-23
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 44531
+SCL masked pixels: 19949
+SCL usable percentage: 69.06172456575682
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 41619
+Invalid pixels: 22861
+Valid percentage: 64.54559553349876
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 6/6
+Date: 2026-08-28
+Cloud cover: 22.48%
+Scene ID: S2B_MSIL2A_20260828T024519_N0512_R132_T49MEV_20260828T054422
+
+Processing scene:
+S2B_MSIL2A_20260828T024519_N0512_R132_T49MEV_20260828T054422
+Scene date: 2026-08-28
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 64480
+SCL masked pixels: 0
+SCL usable percentage: 100.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 56581
+Invalid pixels: 7899
+Valid percentage: 87.74968982630273
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-08
+========================================
+
+NDVI:
+  Mean: 0.529902
+  Median: 0.5535171
+  Standard deviation: 0.10017928
+
+NDRE:
+  Mean: 0.41342652
+  Median: 0.42576072
+  Standard deviation: 0.074524246
+
+GNDVI:
+  Mean: 0.44117936
+  Median: 0.45017526
+  Standard deviation: 0.072483815
+
+NDMI:
+  Mean: 0.15108049
+  Median: 0.17503232
+  Standard deviation: 0.14836128
+
+EVI:
+  Mean: 0.52781713
+  Median: 0.55564344
+  Standard deviation: 0.11829758
+
+Observation count:
+  Minimum: 0
+  Maximum: 6
+  Mean: 2.984119106699752
+
+Scenes found between 2026-09-01 and 2026-10-01: 6
+Scenes retained after cloud filtering: 2
+   2026-09-02 18.87% S2C_MSIL2A_20260902T024521_N0512_R132_T49MEV_20260902T073417
+   2026-09-12 4.14% S2C_MSIL2A_20260912T024521_N0512_R132_T49MEV_20260912T061215
+
+Creating composite for 2026-09
+
+----------------------------------------
+Processing scene 1/2
+Date: 2026-09-02
+Cloud cover: 18.87%
+Scene ID: S2C_MSIL2A_20260902T024521_N0512_R132_T49MEV_20260902T073417
+
+Processing scene:
+S2C_MSIL2A_20260902T024521_N0512_R132_T49MEV_20260902T073417
+Scene date: 2026-09-02
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 12266
+SCL masked pixels: 52214
+SCL usable percentage: 19.022952853598017
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 11368
+Invalid pixels: 53112
+Valid percentage: 17.6302729528536
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 2/2
+Date: 2026-09-12
+Cloud cover: 4.14%
+Scene ID: S2C_MSIL2A_20260912T024521_N0512_R132_T49MEV_20260912T061215
+
+Processing scene:
+S2C_MSIL2A_20260912T024521_N0512_R132_T49MEV_20260912T061215
+Scene date: 2026-09-12
+Sentinel Hub authentication successful!
+
+UTM bounding box:
+(555894.0354921706, 9987553.80792723, 558364.4519784447, 9990145.865082655)
+
+Image dimensions:
+Width: 248
+Height: 260
+Resolution: 10 meters
+
+Sentinel Hub request successful!
+Status code: 200
+Image shape: (11, 260, 248)
+Image dtype: float32
+
+SCL mask created successfully!
+Total pixels: 64480
+SCL usable pixels: 64480
+SCL masked pixels: 0
+SCL usable percentage: 100.0
+
+Plantation boundary mask created successfully!
+Pixels inside plantation: 56581
+
+Combined mask created successfully!
+Valid plantation pixels: 56581
+Invalid pixels: 7899
+Valid percentage: 87.74968982630273
+
+Combined mask applied to spectral bands!
+
+Vegetation indices calculated successfully!
+
+Stacking monthly scene arrays...
+Calculating monthly pixel-wise medians...
+Monthly composite created successfully!
+
+========================================
+Monthly Composite: 2026-09
+========================================
+
+NDVI:
+  Mean: 0.2163085
+  Median: 0.2190507
+  Standard deviation: 0.04621209
+
+NDRE:
+  Mean: 0.21818838
+  Median: 0.22123647
+  Standard deviation: 0.041935142
+
+GNDVI:
+  Mean: 0.11654664
+  Median: 0.11792875
+  Standard deviation: 0.039603207
+
+NDMI:
+  Mean: 0.20507488
+  Median: 0.22643141
+  Standard deviation: 0.102404214
+
+EVI:
+  Mean: 0.8770317
+  Median: 0.85583013
+  Standard deviation: 0.31991786
+
+Observation count:
+  Minimum: 0
+  Maximum: 2
+  Mean: 1.0537996277915633
+
+Scenes found between 2026-10-01 and 2026-11-01: 0
+Scenes retained after cloud filtering: 0
+
+No usable scenes found for 2026-10.
+
+Scenes found between 2026-11-01 and 2026-12-01: 0
+Scenes retained after cloud filtering: 0
+
+No usable scenes found for 2026-11.
+
+Scenes found between 2026-12-01 and 2027-01-01: 0
+Scenes retained after cloud filtering: 0
+
+No usable scenes found for 2026-12.
+
+Monthly Sentinel-2 composite workflow complete!
+Run finished: 2026-09-23 16:52:00
+========================================

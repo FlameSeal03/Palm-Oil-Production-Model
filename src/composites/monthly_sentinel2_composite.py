@@ -4,6 +4,10 @@ import numpy as np
 import pystac_client
 from shapely.geometry import shape
 
+import sys
+from pathlib import Path
+from datetime import datetime
+
 from config.settings import (
     GEOJSON_PATH,
     START_DATE,
@@ -430,6 +434,24 @@ def print_composite_statistics(
         np.nanmean(observation_count),
     )
 
+class Tee:
+    """
+    Write output to both the terminal and a log file.
+    """
+
+    def __init__(self, *files):
+        self.files = files
+
+    def write(self, message):
+        for file in self.files:
+            file.write(message)
+            file.flush()
+
+    def flush(self):
+        for file in self.files:
+            file.flush()
+
+
 
 # -------------------------------------------------------------
 # Main program
@@ -437,153 +459,231 @@ def print_composite_statistics(
 
 if __name__ == "__main__":
 
-    print(
-        "Starting monthly Sentinel-2 "
-        "composite workflow..."
+    # ---------------------------------------------------------
+    # Set up log file
+    # ---------------------------------------------------------
+
+    log_directory = Path("logs")
+
+    log_directory.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    log_file = (
+        log_directory /
+        "monthly_sentinel2_composite.log"
     )
 
     # ---------------------------------------------------------
-    # Load STAC catalog
+    # Open log file in append mode
     # ---------------------------------------------------------
-
-    catalog = pystac_client.Client.open(
-        STAC_URL
-    )
-
-    print(
-        "Connected to Copernicus Data Space."
-    )
-
-    # ---------------------------------------------------------
-    # Load plantation geometry
-    # ---------------------------------------------------------
-
-    import json
 
     with open(
-        GEOJSON_PATH,
-        "r",
-    ) as file:
+        log_file,
+        "w",
+        encoding="utf-8",
+    ) as log:
 
-        geojson = json.load(file)
+        original_stdout = sys.stdout
 
-    plantation_geometry = shape(
-        geojson["features"][0]["geometry"]
-    )
-
-    print(
-        "Plantation geometry loaded."
-    )
-
-    print(
-        "Geometry type:",
-        plantation_geometry.geom_type,
-    )
-
-    # ---------------------------------------------------------
-    # Create monthly date ranges
-    # ---------------------------------------------------------
-
-    start_year = int(
-        START_DATE[:4]
-    )
-
-    start_month = int(
-        START_DATE[5:7]
-    )
-
-    end_year = int(
-        END_DATE[:4]
-    )
-
-    end_month = int(
-        END_DATE[5:7]
-    )
-
-    current_year = start_year
-    current_month = start_month
-
-    # ---------------------------------------------------------
-    # Process each month
-    # ---------------------------------------------------------
-
-    while (
-        current_year < end_year
-        or (
-            current_year == end_year
-            and current_month <= end_month
-        )
-    ):
-
-        month_start = (
-            f"{current_year:04d}-"
-            f"{current_month:02d}-01"
+        sys.stdout = Tee(
+            original_stdout,
+            log,
         )
 
-        if current_month == 12:
+        try:
 
-            next_year = current_year + 1
-            next_month = 1
+            # -------------------------------------------------
+            # Start of run
+            # -------------------------------------------------
 
-        else:
-
-            next_year = current_year
-            next_month = current_month + 1
-
-        next_month_start = (
-            f"{next_year:04d}-"
-            f"{next_month:02d}-01"
-        )
-
-        # -----------------------------------------------------
-        # Find scenes for this month
-        # -----------------------------------------------------
-
-        scenes = find_monthly_scenes(
-            catalog,
-            plantation_geometry,
-            month_start,
-            next_month_start,
-        )
-
-        # -----------------------------------------------------
-        # Create composite
-        # -----------------------------------------------------
-
-        month_name = (
-            f"{current_year:04d}-"
-            f"{current_month:02d}"
-        )
-
-        composite = create_monthly_composite(
-            scenes,
-            month_name,
-        )
-
-        # -----------------------------------------------------
-        # Print results
-        # -----------------------------------------------------
-
-        if composite is not None:
-
-            print_composite_statistics(
-                composite
+            print(
+                "\n\n========================================"
             )
 
-        # -----------------------------------------------------
-        # Move to next month
-        # -----------------------------------------------------
+            print(
+                "Monthly Sentinel-2 Composite Run"
+            )
 
-        current_year = next_year
-        current_month = next_month
+            print(
+                "========================================"
+            )
 
-        # -----------------------------------------------------
-        # Delay between monthly searches
-        # -----------------------------------------------------
+            print(
+                "Run started:",
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+            )
 
-        time.sleep(3)
+            print(
+                "Log file:",
+                log_file,
+            )
 
-    print(
-        "\nMonthly Sentinel-2 composite "
-        "workflow complete!"
-    )
+            # -------------------------------------------------
+            # Load STAC catalog
+            # -------------------------------------------------
+
+            catalog = pystac_client.Client.open(
+                STAC_URL
+            )
+
+            print(
+                "Connected to Copernicus Data Space."
+            )
+
+            # -------------------------------------------------
+            # Load plantation geometry
+            # -------------------------------------------------
+
+            import json
+
+            with open(
+                GEOJSON_PATH,
+                "r",
+            ) as file:
+
+                geojson = json.load(file)
+
+            plantation_geometry = shape(
+                geojson["features"][0]["geometry"]
+            )
+
+            print(
+                "Plantation geometry loaded."
+            )
+
+            print(
+                "Geometry type:",
+                plantation_geometry.geom_type,
+            )
+
+            # -------------------------------------------------
+            # Create monthly date ranges
+            # -------------------------------------------------
+
+            start_year = int(
+                START_DATE[:4]
+            )
+
+            start_month = int(
+                START_DATE[5:7]
+            )
+
+            end_year = int(
+                END_DATE[:4]
+            )
+
+            end_month = int(
+                END_DATE[5:7]
+            )
+
+            current_year = start_year
+            current_month = start_month
+
+            # -------------------------------------------------
+            # Process each month
+            # -------------------------------------------------
+
+            while (
+                current_year < end_year
+                or (
+                    current_year == end_year
+                    and current_month <= end_month
+                )
+            ):
+
+                month_start = (
+                    f"{current_year:04d}-"
+                    f"{current_month:02d}-01"
+                )
+
+                if current_month == 12:
+
+                    next_year = current_year + 1
+                    next_month = 1
+
+                else:
+
+                    next_year = current_year
+                    next_month = current_month + 1
+
+                next_month_start = (
+                    f"{next_year:04d}-"
+                    f"{next_month:02d}-01"
+                )
+
+                # ---------------------------------------------
+                # Find scenes for this month
+                # ---------------------------------------------
+
+                scenes = find_monthly_scenes(
+                    catalog,
+                    plantation_geometry,
+                    month_start,
+                    next_month_start,
+                )
+
+                # ---------------------------------------------
+                # Create composite
+                # ---------------------------------------------
+
+                month_name = (
+                    f"{current_year:04d}-"
+                    f"{current_month:02d}"
+                )
+
+                composite = create_monthly_composite(
+                    scenes,
+                    month_name,
+                )
+
+                # ---------------------------------------------
+                # Print results
+                # ---------------------------------------------
+
+                if composite is not None:
+
+                    print_composite_statistics(
+                        composite
+                    )
+
+                # ---------------------------------------------
+                # Move to next month
+                # ---------------------------------------------
+
+                current_year = next_year
+                current_month = next_month
+
+                # ---------------------------------------------
+                # Delay between monthly searches
+                # ---------------------------------------------
+
+                time.sleep(3)
+
+            # -------------------------------------------------
+            # End of run
+            # -------------------------------------------------
+
+            print(
+                "\nMonthly Sentinel-2 composite "
+                "workflow complete!"
+            )
+
+            print(
+                "Run finished:",
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+            )
+
+            print(
+                "========================================"
+            )
+
+        finally:
+
+            # Restore normal terminal output
+            sys.stdout = original_stdout
