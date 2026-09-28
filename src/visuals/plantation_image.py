@@ -94,7 +94,7 @@ def save_rgb_image(output_directory):
 
     output_path = (
         output_directory
-        / f"plantation_{IMAGE_DATE}_rgb.png"
+        / f"rgb_plantation_{IMAGE_DATE}.png"
     )
 
     plt.figure(figsize=(10, 10))
@@ -137,7 +137,7 @@ def save_index_image(
 
     output_path = (
         output_directory
-        / f"plantation_{IMAGE_DATE}_{index_name.lower()}.png"
+        / f"{index_name.lower()}_plantation_{IMAGE_DATE}.png"
     )
 
     plt.figure(figsize=(10, 10))
@@ -191,7 +191,7 @@ def save_palm_mask_image(
 
     output_path = (
         output_directory
-        / f"plantation_{IMAGE_DATE}_palm_mask.png"
+        / f"palm_mask_plantation_{IMAGE_DATE}.png"
     )
 
     plt.figure(figsize=(10, 10))
