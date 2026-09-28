@@ -17,3 +17,6 @@ python -m src.indices.evi
 
 # Finds 
 python -m src.composites.monthly_sentinel2_composite
+
+# Makes picture
+python -m src.visuals.plantation_image
