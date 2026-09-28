@@ -1,5 +1,0 @@
-python -m src.indices.ndvi
-python -m src.indices.ndre
-python -m src.indices.gndvi
-python -m src.indices.ndmi
-python -m src.indices.evi
