@@ -92,14 +92,6 @@ Plantation boundaries are stored as GeoJSON files in:
 data/boundaries/
 ```
 
-Current plantation boundary files include:
-
-```text
-PT.geojson
-PT. AGRO GADING SEJAHTERA.geojson
-ANTANG.geojson
-```
-
 The selected plantation is controlled through:
 
 ```text
@@ -109,7 +101,7 @@ config/settings.py
 For example:
 
 ```python
-GEOJSON_PATH = "data/boundaries/ANTANG.geojson"
+GEOJSON_PATH = "data/boundaries/AGRO.geojson"
 ```
 
 This allows the same processing pipeline to be used for different plantation blocks without changing the underlying processing code.
@@ -137,12 +129,8 @@ The search:
 5. Sorts scenes by cloud cover.
 6. Displays the best available dates.
 
-For example, one test of the `ANTANG` plantation found:
+For example, one test of the plantations would find a specific date with the lowest cloud coverage. 
 
-```text
-2026-07-20
-Cloud cover: 0.02%
-```
 
 This allows the project to select a relatively clear image for single-date analysis.
 
@@ -200,26 +188,6 @@ Individual index modules can be run independently.
 
 ---
 
-# Current Index Structure
-
-```text
-src/indices/
-├── ndvi.py
-├── ndre.py
-├── gndvi.py
-├── ndmi.py
-├── evi.py
-├── savi.py
-├── msavi.py
-├── nbr.py
-├── ndre_b06.py
-├── ndre_b07.py
-└── palm_mask.py
-```
-
-The index calculations use the same underlying Sentinel-2 imagery so that different measurements can eventually be compared as model features.
-
----
 
 # Palm Vegetation Mask
 
@@ -406,7 +374,7 @@ config/settings.py
 The main settings include:
 
 ```python
-GEOJSON_PATH = "data/boundaries/ANTANG.geojson"
+GEOJSON_PATH = "data/boundaries/{PLANTATION}.geojson"
 
 IMAGE_DATE = "2026-07-20"
 
@@ -428,70 +396,6 @@ Control the date range used for searches and longer-term analysis.
 
 ---
 
-# Project Structure
-
-```text
-Palm-Oil-Production-Model/
-│
-├── config/
-│   └── settings.py
-│
-├── data/
-│   └── boundaries/
-│       ├── PT.geojson
-│       ├── PT. AGRO GADING SEJAHTERA.geojson
-│       └── ANTANG.geojson
-│
-├── logs/
-│   └── monthly_sentinel2_composite.log
-│
-├── notebooks/
-│
-├── outputs/
-│
-├── src/
-│   ├── common/
-│   │   ├── __init__.py
-│   │   └── sentinel2_data.py
-│   │
-│   ├── search/
-│   │   ├── __init__.py
-│   │   ├── best_sentinel2_date.py
-│   │   └── monthly_sentinel2_search.py
-│   │
-│   ├── indices/
-│   │   ├── __init__.py
-│   │   ├── ndvi.py
-│   │   ├── ndre.py
-│   │   ├── gndvi.py
-│   │   ├── ndmi.py
-│   │   ├── evi.py
-│   │   ├── savi.py
-│   │   ├── msavi.py
-│   │   ├── nbr.py
-│   │   ├── ndre_b06.py
-│   │   ├── ndre_b07.py
-│   │   └── palm_mask.py
-│   │
-│   ├── visuals/
-│   │   ├── __init__.py
-│   │   ├── plantation_image.py
-│   │   └── feature_comparison.py
-│   │
-│   ├── analysis/
-│   │   ├── __init__.py
-│   │   └── feature_correlation.py
-│   │
-│   └── composites/
-│       ├── __init__.py
-│       ├── monthly_sentinel2_composite.py
-│       └── process_sentinel2_scene.py
-│
-├── .env
-├── .gitignore
-├── README.md
-└── requirements.py
-```
 
 ---
 
