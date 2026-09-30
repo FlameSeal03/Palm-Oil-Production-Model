@@ -528,6 +528,8 @@ if __name__ == "__main__":
                 ),
             )
 
+            print("Planation:", GEOJSON_PATH)
+
 
             # -------------------------------------------------
             # Load STAC catalog
@@ -680,7 +682,7 @@ if __name__ == "__main__":
             )
 
             print(
-                "Run finished:",
+                "Run finished for ", GEOJSON_PATH,":",
                 datetime.now().strftime(
                     "%Y-%m-%d %H:%M:%S"
                 ),

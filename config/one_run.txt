@@ -1,4 +1,7 @@
-# Run all vegetation indices
+# Lines to put in to run certain files
+
+# Verify the geojson file
+python -m src.common.sentinel2_data
 
 # NDVI - general vegetation vigor
 python -m src.indices.ndvi

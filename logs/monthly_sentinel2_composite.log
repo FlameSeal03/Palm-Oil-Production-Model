@@ -3,37 +3,47 @@
 ========================================
 Monthly Sentinel-2 Composite Run
 ========================================
-Run started: 2026-09-23 19:17:24
+Run started: 2026-09-29 18:55:48
+Planation: data/boundaries/ANTANG.geojson
 Connected to Copernicus Data Space.
 Plantation geometry loaded.
 Geometry type: Polygon
 
-Scenes found between 2026-01-01 and 2026-02-01: 5
+Scenes found between 2026-01-01 and 2026-02-01: 7
 Scenes retained after cloud filtering: 2
-   2026-01-10 77.93% S2B_MSIL2A_20260110T025009_N0511_R132_T49MEV_20260110T062618
-   2026-01-30 78.29% S2B_MSIL2A_20260130T024839_N0511_R132_T49MEV_20260130T062930
+   2026-01-14 52.42% S2B_MSIL2A_20260114T022949_N0511_R046_T49MHT_20260114T042322
+   2026-01-19 54.15% S2C_MSIL2A_20260119T023031_N0511_R046_T49MHT_20260119T053308
 
 Creating composite for 2026-01
 
 ----------------------------------------
 Processing scene 1/2
-Date: 2026-01-10
-Cloud cover: 77.93%
-Scene ID: S2B_MSIL2A_20260110T025009_N0511_R132_T49MEV_20260110T062618
-Scene date: 2026-01-10
-  SCL class: 8.0 Pixels: 8738
-  SCL class: 9.0 Pixels: 46808
-  SCL class: 10.0 Pixels: 1035
+Date: 2026-01-14
+Cloud cover: 52.42%
+Scene ID: S2B_MSIL2A_20260114T022949_N0511_R046_T49MHT_20260114T042322
+Scene date: 2026-01-14
+  SCL class: 3.0 Pixels: 9424
+  SCL class: 4.0 Pixels: 544891
+  SCL class: 5.0 Pixels: 6240
+  SCL class: 7.0 Pixels: 805
+  SCL class: 8.0 Pixels: 5796
+  SCL class: 9.0 Pixels: 592
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
 Processing scene 2/2
-Date: 2026-01-30
-Cloud cover: 78.29%
-Scene ID: S2B_MSIL2A_20260130T024839_N0511_R132_T49MEV_20260130T062930
-Scene date: 2026-01-30
-  SCL class: 9.0 Pixels: 56581
+Date: 2026-01-19
+Cloud cover: 54.15%
+Scene ID: S2C_MSIL2A_20260119T023031_N0511_R046_T49MHT_20260119T053308
+Scene date: 2026-01-19
+  SCL class: 3.0 Pixels: 4760
+  SCL class: 4.0 Pixels: 367314
+  SCL class: 5.0 Pixels: 2152
+  SCL class: 7.0 Pixels: 228
+  SCL class: 8.0 Pixels: 5057
+  SCL class: 9.0 Pixels: 2403
+  SCL class: 10.0 Pixels: 185834
 
 Vegetation indices calculated successfully!
 
@@ -42,66 +52,67 @@ Monthly Composite: 2026-01
 ========================================
 
 NDVI:
-  Mean: nan
-  Median: nan
-  Standard deviation: nan
+  Mean: 0.8123348
+  Median: 0.8458976
+  Standard deviation: 0.100206695
 
 NDRE:
-  Mean: nan
-  Median: nan
-  Standard deviation: nan
+  Mean: 0.57473016
+  Median: 0.586135
+  Standard deviation: 0.07942725
 
 GNDVI:
-  Mean: nan
-  Median: nan
-  Standard deviation: nan
+  Mean: 0.7154802
+  Median: 0.73052466
+  Standard deviation: 0.068587415
 
 NDMI:
-  Mean: nan
-  Median: nan
-  Standard deviation: nan
+  Mean: 0.2668269
+  Median: 0.2966992
+  Standard deviation: 0.11488003
 
 EVI:
-  Mean: nan
-  Median: nan
-  Standard deviation: nan
+  Mean: 0.5925365
+  Median: 0.61069834
+  Standard deviation: 0.1103009
+ Number of scenes: 2
 
-Observation count:
-  Minimum: 0
-  Maximum: 0
-  Mean: 0.0
-
-Scenes found between 2026-02-01 and 2026-03-01: 6
+Scenes found between 2026-02-01 and 2026-03-01: 5
 Scenes retained after cloud filtering: 2
-   2026-02-14 68.40% S2C_MSIL2A_20260214T024821_N0512_R132_T49MEV_20260214T061309
-   2026-03-01 49.33% S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
+   2026-02-03 70.20% S2B_MSIL2A_20260203T022819_N0511_R046_T49MHT_20260203T043624
+   2026-02-28 78.77% S2C_MSIL2A_20260228T022641_N0512_R046_T49MHT_20260228T062415
 
 Creating composite for 2026-02
 
 ----------------------------------------
 Processing scene 1/2
-Date: 2026-02-14
-Cloud cover: 68.40%
-Scene ID: S2C_MSIL2A_20260214T024821_N0512_R132_T49MEV_20260214T061309
-Scene date: 2026-02-14
-  SCL class: 8.0 Pixels: 14363
-  SCL class: 9.0 Pixels: 41846
-  SCL class: 10.0 Pixels: 372
+Date: 2026-02-03
+Cloud cover: 70.20%
+Scene ID: S2B_MSIL2A_20260203T022819_N0511_R046_T49MHT_20260203T043624
+Scene date: 2026-02-03
+  SCL class: 3.0 Pixels: 4663
+  SCL class: 4.0 Pixels: 26257
+  SCL class: 5.0 Pixels: 577
+  SCL class: 7.0 Pixels: 309
+  SCL class: 8.0 Pixels: 102852
+  SCL class: 9.0 Pixels: 61411
+  SCL class: 10.0 Pixels: 371679
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
 Processing scene 2/2
-Date: 2026-03-01
-Cloud cover: 49.33%
-Scene ID: S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
-Scene date: 2026-03-01
-  SCL class: 3.0 Pixels: 3674
-  SCL class: 4.0 Pixels: 48941
-  SCL class: 5.0 Pixels: 1482
-  SCL class: 7.0 Pixels: 248
-  SCL class: 8.0 Pixels: 1984
-  SCL class: 9.0 Pixels: 252
+Date: 2026-02-28
+Cloud cover: 78.77%
+Scene ID: S2C_MSIL2A_20260228T022641_N0512_R046_T49MHT_20260228T062415
+Scene date: 2026-02-28
+  SCL class: 3.0 Pixels: 4212
+  SCL class: 4.0 Pixels: 131829
+  SCL class: 5.0 Pixels: 433
+  SCL class: 7.0 Pixels: 373
+  SCL class: 8.0 Pixels: 55306
+  SCL class: 9.0 Pixels: 9098
+  SCL class: 10.0 Pixels: 366497
 
 Vegetation indices calculated successfully!
 
@@ -110,101 +121,66 @@ Monthly Composite: 2026-02
 ========================================
 
 NDVI:
-  Mean: 0.70293355
-  Median: 0.7459598
-  Standard deviation: 0.13805974
+  Mean: 0.7949835
+  Median: 0.8168732
+  Standard deviation: 0.087956294
 
 NDRE:
-  Mean: 0.5155767
-  Median: 0.5259396
-  Standard deviation: 0.10060551
+  Mean: 0.5333067
+  Median: 0.53947365
+  Standard deviation: 0.062082596
 
 GNDVI:
-  Mean: 0.6347676
-  Median: 0.6541646
-  Standard deviation: 0.09166521
+  Mean: 0.69891584
+  Median: 0.71353537
+  Standard deviation: 0.069459245
 
 NDMI:
-  Mean: 0.14530008
-  Median: 0.16842103
-  Standard deviation: 0.1557798
+  Mean: 0.2890846
+  Median: 0.30500475
+  Standard deviation: 0.0860784
 
 EVI:
-  Mean: 0.49577993
-  Median: 0.51807326
-  Standard deviation: 0.11655121
+  Mean: 0.5968572
+  Median: 0.6066136
+  Standard deviation: 0.10298712
+ Number of scenes: 2
 
-Observation count:
-  Minimum: 0
-  Maximum: 1
-  Mean: 0.7819944168734492
-
-Scenes found between 2026-03-01 and 2026-04-01: 7
-Scenes retained after cloud filtering: 4
-   2026-03-01 49.33% S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
-   2026-03-11 67.76% S2B_MSIL2A_20260311T024529_N0512_R132_T49MEV_20260311T062751
-   2026-03-21 74.26% S2B_MSIL2A_20260321T024539_N0512_R132_T49MEV_20260321T062740
-   2026-03-26 73.34% S2C_MSIL2A_20260326T024551_N0512_R132_T49MEV_20260326T062512
+Scenes found between 2026-03-01 and 2026-04-01: 8
+Scenes retained after cloud filtering: 2
+   2026-03-15 66.67% S2B_MSIL2A_20260315T022549_N0512_R046_T49MHT_20260315T060330
+   2026-04-01 52.26% S2A_MSIL2A_20260401T023141_N0512_R046_T49MHT_20260401T080509
 
 Creating composite for 2026-03
 
 ----------------------------------------
-Processing scene 1/4
-Date: 2026-03-01
-Cloud cover: 49.33%
-Scene ID: S2B_MSIL2A_20260301T024529_N0512_R132_T49MEV_20260301T063252
-Scene date: 2026-03-01
-  SCL class: 3.0 Pixels: 3674
-  SCL class: 4.0 Pixels: 48941
-  SCL class: 5.0 Pixels: 1482
-  SCL class: 7.0 Pixels: 248
-  SCL class: 8.0 Pixels: 1984
-  SCL class: 9.0 Pixels: 252
+Processing scene 1/2
+Date: 2026-03-15
+Cloud cover: 66.67%
+Scene ID: S2B_MSIL2A_20260315T022549_N0512_R046_T49MHT_20260315T060330
+Scene date: 2026-03-15
+  SCL class: 3.0 Pixels: 30619
+  SCL class: 4.0 Pixels: 333410
+  SCL class: 5.0 Pixels: 5816
+  SCL class: 7.0 Pixels: 3496
+  SCL class: 8.0 Pixels: 57832
+  SCL class: 9.0 Pixels: 56963
+  SCL class: 10.0 Pixels: 79612
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/4
-Date: 2026-03-11
-Cloud cover: 67.76%
-Scene ID: S2B_MSIL2A_20260311T024529_N0512_R132_T49MEV_20260311T062751
-Scene date: 2026-03-11
-  SCL class: 3.0 Pixels: 70
-  SCL class: 7.0 Pixels: 6
-  SCL class: 8.0 Pixels: 9001
-  SCL class: 9.0 Pixels: 42534
-  SCL class: 10.0 Pixels: 4970
-
-Vegetation indices calculated successfully!
-
-----------------------------------------
-Processing scene 3/4
-Date: 2026-03-21
-Cloud cover: 74.26%
-Scene ID: S2B_MSIL2A_20260321T024539_N0512_R132_T49MEV_20260321T062740
-Scene date: 2026-03-21
-  SCL class: 2.0 Pixels: 12
-  SCL class: 3.0 Pixels: 21495
-  SCL class: 4.0 Pixels: 14763
-  SCL class: 5.0 Pixels: 846
-  SCL class: 7.0 Pixels: 1291
-  SCL class: 8.0 Pixels: 8964
-  SCL class: 9.0 Pixels: 9210
-
-Vegetation indices calculated successfully!
-
-----------------------------------------
-Processing scene 4/4
-Date: 2026-03-26
-Cloud cover: 73.34%
-Scene ID: S2C_MSIL2A_20260326T024551_N0512_R132_T49MEV_20260326T062512
-Scene date: 2026-03-26
-  SCL class: 3.0 Pixels: 6326
-  SCL class: 4.0 Pixels: 32973
-  SCL class: 5.0 Pixels: 3164
-  SCL class: 7.0 Pixels: 232
-  SCL class: 8.0 Pixels: 8814
-  SCL class: 9.0 Pixels: 5072
+Processing scene 2/2
+Date: 2026-04-01
+Cloud cover: 52.26%
+Scene ID: S2A_MSIL2A_20260401T023141_N0512_R046_T49MHT_20260401T080509
+Scene date: 2026-04-01
+  SCL class: 3.0 Pixels: 92234
+  SCL class: 4.0 Pixels: 137655
+  SCL class: 5.0 Pixels: 2240
+  SCL class: 7.0 Pixels: 1580
+  SCL class: 8.0 Pixels: 142199
+  SCL class: 9.0 Pixels: 191840
 
 Vegetation indices calculated successfully!
 
@@ -213,85 +189,214 @@ Monthly Composite: 2026-03
 ========================================
 
 NDVI:
-  Mean: 0.69229746
-  Median: 0.7363897
-  Standard deviation: 0.14525671
+  Mean: 0.7756623
+  Median: 0.8035732
+  Standard deviation: 0.09811739
 
 NDRE:
-  Mean: 0.49500245
-  Median: 0.50681746
-  Standard deviation: 0.103169255
+  Mean: 0.5713213
+  Median: 0.5817418
+  Standard deviation: 0.073597796
 
 GNDVI:
-  Mean: 0.6206547
-  Median: 0.64243054
-  Standard deviation: 0.099081695
+  Mean: 0.6751512
+  Median: 0.68758553
+  Standard deviation: 0.07256105
 
 NDMI:
-  Mean: 0.16282511
-  Median: 0.19096425
-  Standard deviation: 0.15848482
+  Mean: 0.27290088
+  Median: 0.29866052
+  Standard deviation: 0.10188837
 
 EVI:
-  Mean: 0.52367824
-  Median: 0.54613745
-  Standard deviation: 0.13177536
+  Mean: 0.66827744
+  Median: 0.68019277
+  Standard deviation: 0.11684448
+ Number of scenes: 2
 
-Observation count:
-  Minimum: 0
-  Maximum: 3
-  Mean: 1.58450682382134
-
-Scenes found between 2026-04-01 and 2026-05-01: 7
-Scenes retained after cloud filtering: 3
-   2026-04-15 46.52% S2C_MSIL2A_20260415T024521_N0512_R132_T49MEV_20260415T074409
-   2026-04-17 44.16% S2A_MSIL2A_20260417T025201_N0512_R132_T49MEV_20260417T110112
-   2026-04-20 45.54% S2B_MSIL2A_20260420T024519_N0512_R132_T49MEV_20260420T045505
+Scenes found between 2026-04-01 and 2026-05-01: 11
+Scenes retained after cloud filtering: 11
+   2026-04-01 52.26% S2A_MSIL2A_20260401T023141_N0512_R046_T49MHT_20260401T080509
+   2026-04-04 43.51% S2B_MSIL2A_20260404T022529_N0512_R046_T49MHT_20260404T060326
+   2026-04-09 26.19% S2C_MSIL2A_20260409T022551_N0512_R046_T49MHT_20260409T061214
+   2026-04-09 62.77% S2C_MSIL2A_20260409T022551_N0512_R046_T49MHT_20260409T060514
+   2026-04-14 65.71% S2B_MSIL2A_20260414T022529_N0512_R046_T49MHT_20260414T104630
+   2026-04-19 59.08% S2C_MSIL2A_20260419T022551_N0512_R046_T49MHT_20260419T061321
+   2026-04-19 43.96% S2C_MSIL2A_20260419T022551_N0512_R046_T49MHT_20260419T061211
+   2026-04-21 47.65% S2A_MSIL2A_20260421T023141_N0512_R046_T49MHT_20260421T090310
+   2026-04-24 45.30% S2B_MSIL2A_20260424T022529_N0512_R046_T49MHT_20260424T052407
+   2026-04-29 33.44% S2C_MSIL2A_20260429T022551_N0512_R046_T49MHT_20260429T061922
+   2026-04-29 22.39% S2C_MSIL2A_20260429T022551_N0512_R046_T49MHT_20260429T060959
 
 Creating composite for 2026-04
 
 ----------------------------------------
-Processing scene 1/3
-Date: 2026-04-15
-Cloud cover: 46.52%
-Scene ID: S2C_MSIL2A_20260415T024521_N0512_R132_T49MEV_20260415T074409
-Scene date: 2026-04-15
-  SCL class: 4.0 Pixels: 2591
-  SCL class: 5.0 Pixels: 891
-  SCL class: 7.0 Pixels: 885
-  SCL class: 8.0 Pixels: 23693
-  SCL class: 9.0 Pixels: 5891
-  SCL class: 10.0 Pixels: 22630
+Processing scene 1/11
+Date: 2026-04-01
+Cloud cover: 52.26%
+Scene ID: S2A_MSIL2A_20260401T023141_N0512_R046_T49MHT_20260401T080509
+Scene date: 2026-04-01
+  SCL class: 3.0 Pixels: 92234
+  SCL class: 4.0 Pixels: 137655
+  SCL class: 5.0 Pixels: 2240
+  SCL class: 7.0 Pixels: 1580
+  SCL class: 8.0 Pixels: 142199
+  SCL class: 9.0 Pixels: 191840
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/3
-Date: 2026-04-17
-Cloud cover: 44.16%
-Scene ID: S2A_MSIL2A_20260417T025201_N0512_R132_T49MEV_20260417T110112
-Scene date: 2026-04-17
-  SCL class: 3.0 Pixels: 15340
-  SCL class: 4.0 Pixels: 17760
-  SCL class: 5.0 Pixels: 840
-  SCL class: 7.0 Pixels: 188
-  SCL class: 8.0 Pixels: 12595
-  SCL class: 9.0 Pixels: 9858
+Processing scene 2/11
+Date: 2026-04-04
+Cloud cover: 43.51%
+Scene ID: S2B_MSIL2A_20260404T022529_N0512_R046_T49MHT_20260404T060326
+Scene date: 2026-04-04
+  SCL class: 3.0 Pixels: 72904
+  SCL class: 4.0 Pixels: 279987
+  SCL class: 5.0 Pixels: 5449
+  SCL class: 7.0 Pixels: 1829
+  SCL class: 8.0 Pixels: 102622
+  SCL class: 9.0 Pixels: 104957
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 3/3
-Date: 2026-04-20
-Cloud cover: 45.54%
-Scene ID: S2B_MSIL2A_20260420T024519_N0512_R132_T49MEV_20260420T045505
-Scene date: 2026-04-20
-  SCL class: 3.0 Pixels: 4702
-  SCL class: 4.0 Pixels: 11807
-  SCL class: 5.0 Pixels: 448
-  SCL class: 7.0 Pixels: 1404
-  SCL class: 8.0 Pixels: 17619
-  SCL class: 9.0 Pixels: 20601
+Processing scene 3/11
+Date: 2026-04-09
+Cloud cover: 26.19%
+Scene ID: S2C_MSIL2A_20260409T022551_N0512_R046_T49MHT_20260409T061214
+Scene date: 2026-04-09
+  SCL class: 3.0 Pixels: 26087
+  SCL class: 4.0 Pixels: 478414
+  SCL class: 5.0 Pixels: 8344
+  SCL class: 7.0 Pixels: 2776
+  SCL class: 8.0 Pixels: 25801
+  SCL class: 9.0 Pixels: 10197
+  SCL class: 10.0 Pixels: 16129
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 4/11
+Date: 2026-04-09
+Cloud cover: 62.77%
+Scene ID: S2C_MSIL2A_20260409T022551_N0512_R046_T49MHT_20260409T060514
+Scene date: 2026-04-09
+  SCL class: 3.0 Pixels: 26087
+  SCL class: 4.0 Pixels: 478414
+  SCL class: 5.0 Pixels: 8344
+  SCL class: 7.0 Pixels: 2776
+  SCL class: 8.0 Pixels: 25801
+  SCL class: 9.0 Pixels: 10197
+  SCL class: 10.0 Pixels: 16129
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 5/11
+Date: 2026-04-14
+Cloud cover: 65.71%
+Scene ID: S2B_MSIL2A_20260414T022529_N0512_R046_T49MHT_20260414T104630
+Scene date: 2026-04-14
+  SCL class: 3.0 Pixels: 833
+  SCL class: 4.0 Pixels: 127908
+  SCL class: 5.0 Pixels: 15069
+  SCL class: 7.0 Pixels: 23492
+  SCL class: 8.0 Pixels: 72329
+  SCL class: 9.0 Pixels: 328117
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 6/11
+Date: 2026-04-19
+Cloud cover: 59.08%
+Scene ID: S2C_MSIL2A_20260419T022551_N0512_R046_T49MHT_20260419T061321
+Scene date: 2026-04-19
+  SCL class: 2.0 Pixels: 119
+  SCL class: 4.0 Pixels: 457567
+  SCL class: 5.0 Pixels: 16271
+  SCL class: 7.0 Pixels: 2181
+  SCL class: 8.0 Pixels: 21846
+  SCL class: 9.0 Pixels: 14374
+  SCL class: 10.0 Pixels: 55390
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 7/11
+Date: 2026-04-19
+Cloud cover: 43.96%
+Scene ID: S2C_MSIL2A_20260419T022551_N0512_R046_T49MHT_20260419T061211
+Scene date: 2026-04-19
+  SCL class: 2.0 Pixels: 119
+  SCL class: 4.0 Pixels: 457567
+  SCL class: 5.0 Pixels: 16271
+  SCL class: 7.0 Pixels: 2181
+  SCL class: 8.0 Pixels: 21846
+  SCL class: 9.0 Pixels: 14374
+  SCL class: 10.0 Pixels: 55390
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 8/11
+Date: 2026-04-21
+Cloud cover: 47.65%
+Scene ID: S2A_MSIL2A_20260421T023141_N0512_R046_T49MHT_20260421T090310
+Scene date: 2026-04-21
+  SCL class: 3.0 Pixels: 57684
+  SCL class: 4.0 Pixels: 86592
+  SCL class: 5.0 Pixels: 3961
+  SCL class: 7.0 Pixels: 3007
+  SCL class: 8.0 Pixels: 134097
+  SCL class: 9.0 Pixels: 282407
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 9/11
+Date: 2026-04-24
+Cloud cover: 45.30%
+Scene ID: S2B_MSIL2A_20260424T022529_N0512_R046_T49MHT_20260424T052407
+Scene date: 2026-04-24
+  SCL class: 2.0 Pixels: 24
+  SCL class: 3.0 Pixels: 53343
+  SCL class: 4.0 Pixels: 233016
+  SCL class: 5.0 Pixels: 10459
+  SCL class: 7.0 Pixels: 5199
+  SCL class: 8.0 Pixels: 134101
+  SCL class: 9.0 Pixels: 131606
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 10/11
+Date: 2026-04-29
+Cloud cover: 33.44%
+Scene ID: S2C_MSIL2A_20260429T022551_N0512_R046_T49MHT_20260429T061922
+Scene date: 2026-04-29
+  SCL class: 3.0 Pixels: 33061
+  SCL class: 4.0 Pixels: 389955
+  SCL class: 5.0 Pixels: 12538
+  SCL class: 7.0 Pixels: 6369
+  SCL class: 8.0 Pixels: 81788
+  SCL class: 9.0 Pixels: 44037
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 11/11
+Date: 2026-04-29
+Cloud cover: 22.39%
+Scene ID: S2C_MSIL2A_20260429T022551_N0512_R046_T49MHT_20260429T060959
+Scene date: 2026-04-29
+  SCL class: 3.0 Pixels: 33061
+  SCL class: 4.0 Pixels: 389955
+  SCL class: 5.0 Pixels: 12538
+  SCL class: 7.0 Pixels: 6369
+  SCL class: 8.0 Pixels: 81788
+  SCL class: 9.0 Pixels: 44037
 
 Vegetation indices calculated successfully!
 
@@ -300,104 +405,148 @@ Monthly Composite: 2026-04
 ========================================
 
 NDVI:
-  Mean: 0.6669508
-  Median: 0.7058803
-  Standard deviation: 0.1463212
+  Mean: 0.8110861
+  Median: 0.8393352
+  Standard deviation: 0.08919642
 
 NDRE:
-  Mean: 0.49145418
-  Median: 0.5098947
-  Standard deviation: 0.09763122
+  Mean: 0.5418966
+  Median: 0.5485017
+  Standard deviation: 0.063048616
 
 GNDVI:
-  Mean: 0.58743334
-  Median: 0.61155206
-  Standard deviation: 0.10709965
+  Mean: 0.70870215
+  Median: 0.72143716
+  Standard deviation: 0.062472004
 
 NDMI:
-  Mean: 0.19618918
-  Median: 0.2145074
-  Standard deviation: 0.13846092
+  Mean: 0.27894005
+  Median: 0.29953212
+  Standard deviation: 0.09244892
 
 EVI:
-  Mean: 0.5473773
-  Median: 0.57377404
-  Standard deviation: 0.15114376
-
-Observation count:
-  Minimum: 0
-  Maximum: 3
-  Mean: 0.532521712158809
+  Mean: 0.6130374
+  Median: 0.6220785
+  Standard deviation: 0.1040066
+ Number of scenes: 11
 
 Scenes found between 2026-05-01 and 2026-06-01: 8
-Scenes retained after cloud filtering: 4
-   2026-05-07 79.40% S2A_MSIL2A_20260507T025151_N0512_R132_T49MEV_20260508T100113
-   2026-05-20 45.94% S2B_MSIL2A_20260520T024519_N0512_R132_T49MEV_20260520T054404
-   2026-05-25 65.53% S2C_MSIL2A_20260525T024521_N0512_R132_T49MEV_20260525T052015
-   2026-05-30 59.58% S2B_MSIL2A_20260530T024519_N0512_R132_T49MEV_20260530T063600
+Scenes retained after cloud filtering: 7
+   2026-05-04 45.52% S2B_MSIL2A_20260504T022529_N0512_R046_T49MHT_20260504T052406
+   2026-05-09 72.46% S2C_MSIL2A_20260509T022531_N0512_R046_T49MHT_20260509T061216
+   2026-05-11 48.24% S2A_MSIL2A_20260511T023131_N0512_R046_T49MHT_20260511T091623
+   2026-05-14 56.55% S2B_MSIL2A_20260514T022529_N0512_R046_T49MHT_20260514T052543
+   2026-05-19 69.61% S2C_MSIL2A_20260519T022531_N0512_R046_T49MHT_20260519T072513
+   2026-05-24 46.54% S2B_MSIL2A_20260524T022529_N0512_R046_T49MHT_20260524T052339
+   2026-05-31 75.15% S2A_MSIL2A_20260531T023141_N0512_R046_T49MHT_20260531T083608
 
 Creating composite for 2026-05
 
 ----------------------------------------
-Processing scene 1/4
-Date: 2026-05-07
-Cloud cover: 79.40%
-Scene ID: S2A_MSIL2A_20260507T025151_N0512_R132_T49MEV_20260508T100113
-Scene date: 2026-05-07
-  SCL class: 3.0 Pixels: 9150
-  SCL class: 4.0 Pixels: 8214
-  SCL class: 5.0 Pixels: 240
-  SCL class: 7.0 Pixels: 899
-  SCL class: 8.0 Pixels: 16073
-  SCL class: 9.0 Pixels: 22005
+Processing scene 1/7
+Date: 2026-05-04
+Cloud cover: 45.52%
+Scene ID: S2B_MSIL2A_20260504T022529_N0512_R046_T49MHT_20260504T052406
+Scene date: 2026-05-04
+  SCL class: 3.0 Pixels: 123871
+  SCL class: 4.0 Pixels: 146816
+  SCL class: 5.0 Pixels: 4000
+  SCL class: 7.0 Pixels: 2018
+  SCL class: 8.0 Pixels: 130205
+  SCL class: 9.0 Pixels: 160838
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/4
-Date: 2026-05-20
-Cloud cover: 45.94%
-Scene ID: S2B_MSIL2A_20260520T024519_N0512_R132_T49MEV_20260520T054404
-Scene date: 2026-05-20
-  SCL class: 3.0 Pixels: 11685
-  SCL class: 4.0 Pixels: 19338
-  SCL class: 5.0 Pixels: 524
-  SCL class: 7.0 Pixels: 134
-  SCL class: 8.0 Pixels: 11308
-  SCL class: 9.0 Pixels: 10214
-  SCL class: 10.0 Pixels: 3378
+Processing scene 2/7
+Date: 2026-05-09
+Cloud cover: 72.46%
+Scene ID: S2C_MSIL2A_20260509T022531_N0512_R046_T49MHT_20260509T061216
+Scene date: 2026-05-09
+  SCL class: 3.0 Pixels: 464
+  SCL class: 4.0 Pixels: 508211
+  SCL class: 5.0 Pixels: 11921
+  SCL class: 7.0 Pixels: 19850
+  SCL class: 8.0 Pixels: 21738
+  SCL class: 9.0 Pixels: 5564
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 3/4
-Date: 2026-05-25
-Cloud cover: 65.53%
-Scene ID: S2C_MSIL2A_20260525T024521_N0512_R132_T49MEV_20260525T052015
-Scene date: 2026-05-25
-  SCL class: 3.0 Pixels: 2813
-  SCL class: 4.0 Pixels: 5337
-  SCL class: 5.0 Pixels: 886
-  SCL class: 7.0 Pixels: 5516
-  SCL class: 8.0 Pixels: 23382
-  SCL class: 9.0 Pixels: 18647
+Processing scene 3/7
+Date: 2026-05-11
+Cloud cover: 48.24%
+Scene ID: S2A_MSIL2A_20260511T023131_N0512_R046_T49MHT_20260511T091623
+Scene date: 2026-05-11
+  SCL class: 3.0 Pixels: 15145
+  SCL class: 4.0 Pixels: 324779
+  SCL class: 5.0 Pixels: 3734
+  SCL class: 7.0 Pixels: 376
+  SCL class: 8.0 Pixels: 27777
+  SCL class: 9.0 Pixels: 8266
+  SCL class: 10.0 Pixels: 187671
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 4/4
-Date: 2026-05-30
-Cloud cover: 59.58%
-Scene ID: S2B_MSIL2A_20260530T024519_N0512_R132_T49MEV_20260530T063600
-Scene date: 2026-05-30
-  SCL class: 2.0 Pixels: 4
-  SCL class: 3.0 Pixels: 5862
-  SCL class: 4.0 Pixels: 24541
-  SCL class: 5.0 Pixels: 1528
-  SCL class: 7.0 Pixels: 1380
-  SCL class: 8.0 Pixels: 13821
-  SCL class: 9.0 Pixels: 6460
-  SCL class: 10.0 Pixels: 2985
+Processing scene 4/7
+Date: 2026-05-14
+Cloud cover: 56.55%
+Scene ID: S2B_MSIL2A_20260514T022529_N0512_R046_T49MHT_20260514T052543
+Scene date: 2026-05-14
+  SCL class: 3.0 Pixels: 1010
+  SCL class: 4.0 Pixels: 252288
+  SCL class: 5.0 Pixels: 3954
+  SCL class: 7.0 Pixels: 6349
+  SCL class: 8.0 Pixels: 138247
+  SCL class: 9.0 Pixels: 165884
+  SCL class: 10.0 Pixels: 16
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 5/7
+Date: 2026-05-19
+Cloud cover: 69.61%
+Scene ID: S2C_MSIL2A_20260519T022531_N0512_R046_T49MHT_20260519T072513
+Scene date: 2026-05-19
+  SCL class: 4.0 Pixels: 1202
+  SCL class: 7.0 Pixels: 4
+  SCL class: 8.0 Pixels: 82754
+  SCL class: 9.0 Pixels: 65574
+  SCL class: 10.0 Pixels: 418214
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 6/7
+Date: 2026-05-24
+Cloud cover: 46.54%
+Scene ID: S2B_MSIL2A_20260524T022529_N0512_R046_T49MHT_20260524T052339
+Scene date: 2026-05-24
+  SCL class: 3.0 Pixels: 3412
+  SCL class: 4.0 Pixels: 445892
+  SCL class: 5.0 Pixels: 6291
+  SCL class: 7.0 Pixels: 5009
+  SCL class: 8.0 Pixels: 65182
+  SCL class: 9.0 Pixels: 34742
+  SCL class: 10.0 Pixels: 7220
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 7/7
+Date: 2026-05-31
+Cloud cover: 75.15%
+Scene ID: S2A_MSIL2A_20260531T023141_N0512_R046_T49MHT_20260531T083608
+Scene date: 2026-05-31
+  SCL class: 3.0 Pixels: 35747
+  SCL class: 4.0 Pixels: 271748
+  SCL class: 5.0 Pixels: 5933
+  SCL class: 7.0 Pixels: 11139
+  SCL class: 8.0 Pixels: 55940
+  SCL class: 9.0 Pixels: 25071
+  SCL class: 10.0 Pixels: 162170
 
 Vegetation indices calculated successfully!
 
@@ -406,115 +555,129 @@ Monthly Composite: 2026-05
 ========================================
 
 NDVI:
-  Mean: 0.6776242
-  Median: 0.7152218
-  Standard deviation: 0.14370508
+  Mean: 0.80208296
+  Median: 0.82772
+  Standard deviation: 0.087902926
 
 NDRE:
-  Mean: 0.5070795
-  Median: 0.5248742
-  Standard deviation: 0.10324717
+  Mean: 0.5809388
+  Median: 0.59116673
+  Standard deviation: 0.06604083
 
 GNDVI:
-  Mean: 0.59254044
-  Median: 0.6144527
-  Standard deviation: 0.105290554
+  Mean: 0.69646066
+  Median: 0.71005094
+  Standard deviation: 0.0636399
 
 NDMI:
-  Mean: 0.20956333
-  Median: 0.22943035
-  Standard deviation: 0.13629544
+  Mean: 0.2987417
+  Median: 0.3193634
+  Standard deviation: 0.09261105
 
 EVI:
-  Mean: 0.54077375
-  Median: 0.55641663
-  Standard deviation: 0.1857192
-
-Observation count:
-  Minimum: 0
-  Maximum: 4
-  Mean: 0.9399503722084367
+  Mean: 0.6019576
+  Median: 0.61432123
+  Standard deviation: 0.11477396
+ Number of scenes: 7
 
 Scenes found between 2026-06-01 and 2026-07-01: 7
-Scenes retained after cloud filtering: 5
-   2026-06-04 66.34% S2C_MSIL2A_20260604T024521_N0512_R132_T49MEV_20260604T063510
-   2026-06-09 30.71% S2B_MSIL2A_20260609T024529_N0512_R132_T49MEV_20260609T062750
-   2026-06-19 55.94% S2B_MSIL2A_20260619T024529_N0512_R132_T49MEV_20260619T054525
-   2026-06-24 55.68% S2C_MSIL2A_20260624T024531_N0512_R132_T49MEV_20260624T063612
-   2026-06-29 51.36% S2B_MSIL2A_20260629T024529_N0512_R132_T49MEV_20260629T062331
+Scenes retained after cloud filtering: 6
+   2026-06-03 27.27% S2B_MSIL2A_20260603T022529_N0512_R046_T49MHT_20260603T074117
+   2026-06-08 62.16% S2C_MSIL2A_20260608T022531_N0512_R046_T49MHT_20260608T061458
+   2026-06-13 53.73% S2B_MSIL2A_20260613T022529_N0512_R046_T49MHT_20260613T052519
+   2026-06-18 45.55% S2C_MSIL2A_20260618T022531_N0512_R046_T49MHT_20260618T061101
+   2026-06-20 20.19% S2A_MSIL2A_20260620T023141_N0512_R046_T49MHT_20260620T090015
+   2026-06-28 55.53% S2C_MSIL2A_20260628T022531_N0512_R046_T49MHT_20260628T060912
 
 Creating composite for 2026-06
 
 ----------------------------------------
-Processing scene 1/5
-Date: 2026-06-04
-Cloud cover: 66.34%
-Scene ID: S2C_MSIL2A_20260604T024521_N0512_R132_T49MEV_20260604T063510
-Scene date: 2026-06-04
-  SCL class: 8.0 Pixels: 17181
-  SCL class: 9.0 Pixels: 39232
-  SCL class: 10.0 Pixels: 168
+Processing scene 1/6
+Date: 2026-06-03
+Cloud cover: 27.27%
+Scene ID: S2B_MSIL2A_20260603T022529_N0512_R046_T49MHT_20260603T074117
+Scene date: 2026-06-03
+  SCL class: 3.0 Pixels: 3373
+  SCL class: 4.0 Pixels: 488460
+  SCL class: 5.0 Pixels: 26255
+  SCL class: 7.0 Pixels: 1531
+  SCL class: 8.0 Pixels: 32293
+  SCL class: 9.0 Pixels: 15836
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/5
-Date: 2026-06-09
-Cloud cover: 30.71%
-Scene ID: S2B_MSIL2A_20260609T024529_N0512_R132_T49MEV_20260609T062750
-Scene date: 2026-06-09
-  SCL class: 3.0 Pixels: 12142
-  SCL class: 4.0 Pixels: 24773
-  SCL class: 5.0 Pixels: 995
-  SCL class: 7.0 Pixels: 688
-  SCL class: 8.0 Pixels: 10819
-  SCL class: 9.0 Pixels: 7164
+Processing scene 2/6
+Date: 2026-06-08
+Cloud cover: 62.16%
+Scene ID: S2C_MSIL2A_20260608T022531_N0512_R046_T49MHT_20260608T061458
+Scene date: 2026-06-08
+  SCL class: 4.0 Pixels: 160797
+  SCL class: 5.0 Pixels: 26154
+  SCL class: 7.0 Pixels: 51783
+  SCL class: 8.0 Pixels: 111822
+  SCL class: 9.0 Pixels: 217192
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 3/5
-Date: 2026-06-19
-Cloud cover: 55.94%
-Scene ID: S2B_MSIL2A_20260619T024529_N0512_R132_T49MEV_20260619T054525
-Scene date: 2026-06-19
-  SCL class: 3.0 Pixels: 16291
-  SCL class: 4.0 Pixels: 17289
-  SCL class: 5.0 Pixels: 1366
-  SCL class: 7.0 Pixels: 264
-  SCL class: 8.0 Pixels: 13005
-  SCL class: 9.0 Pixels: 8366
+Processing scene 3/6
+Date: 2026-06-13
+Cloud cover: 53.73%
+Scene ID: S2B_MSIL2A_20260613T022529_N0512_R046_T49MHT_20260613T052519
+Scene date: 2026-06-13
+  SCL class: 3.0 Pixels: 3343
+  SCL class: 4.0 Pixels: 191297
+  SCL class: 5.0 Pixels: 18146
+  SCL class: 7.0 Pixels: 61869
+  SCL class: 8.0 Pixels: 178264
+  SCL class: 9.0 Pixels: 114829
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 4/5
-Date: 2026-06-24
-Cloud cover: 55.68%
-Scene ID: S2C_MSIL2A_20260624T024531_N0512_R132_T49MEV_20260624T063612
-Scene date: 2026-06-24
-  SCL class: 3.0 Pixels: 23591
-  SCL class: 4.0 Pixels: 20722
-  SCL class: 5.0 Pixels: 1104
-  SCL class: 7.0 Pixels: 281
-  SCL class: 8.0 Pixels: 6899
-  SCL class: 9.0 Pixels: 3984
+Processing scene 4/6
+Date: 2026-06-18
+Cloud cover: 45.55%
+Scene ID: S2C_MSIL2A_20260618T022531_N0512_R046_T49MHT_20260618T061101
+Scene date: 2026-06-18
+  SCL class: 3.0 Pixels: 58992
+  SCL class: 4.0 Pixels: 178043
+  SCL class: 5.0 Pixels: 5360
+  SCL class: 7.0 Pixels: 11662
+  SCL class: 8.0 Pixels: 136210
+  SCL class: 9.0 Pixels: 174177
+  SCL class: 10.0 Pixels: 3304
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 5/5
-Date: 2026-06-29
-Cloud cover: 51.36%
-Scene ID: S2B_MSIL2A_20260629T024529_N0512_R132_T49MEV_20260629T062331
-Scene date: 2026-06-29
-  SCL class: 3.0 Pixels: 4809
-  SCL class: 4.0 Pixels: 7099
-  SCL class: 5.0 Pixels: 320
-  SCL class: 7.0 Pixels: 980
-  SCL class: 8.0 Pixels: 19446
-  SCL class: 9.0 Pixels: 22275
-  SCL class: 10.0 Pixels: 1652
+Processing scene 5/6
+Date: 2026-06-20
+Cloud cover: 20.19%
+Scene ID: S2A_MSIL2A_20260620T023141_N0512_R046_T49MHT_20260620T090015
+Scene date: 2026-06-20
+  SCL class: 3.0 Pixels: 9275
+  SCL class: 4.0 Pixels: 548633
+  SCL class: 5.0 Pixels: 3047
+  SCL class: 7.0 Pixels: 881
+  SCL class: 8.0 Pixels: 5080
+  SCL class: 9.0 Pixels: 832
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 6/6
+Date: 2026-06-28
+Cloud cover: 55.53%
+Scene ID: S2C_MSIL2A_20260628T022531_N0512_R046_T49MHT_20260628T060912
+Scene date: 2026-06-28
+  SCL class: 3.0 Pixels: 9586
+  SCL class: 4.0 Pixels: 180315
+  SCL class: 5.0 Pixels: 8259
+  SCL class: 7.0 Pixels: 16915
+  SCL class: 8.0 Pixels: 130836
+  SCL class: 9.0 Pixels: 221837
 
 Vegetation indices calculated successfully!
 
@@ -523,144 +686,163 @@ Monthly Composite: 2026-06
 ========================================
 
 NDVI:
-  Mean: 0.7212462
-  Median: 0.757285
-  Standard deviation: 0.13553676
+  Mean: 0.81348115
+  Median: 0.8513845
+  Standard deviation: 0.099692844
 
 NDRE:
-  Mean: 0.5182887
-  Median: 0.5281168
-  Standard deviation: 0.093264006
+  Mean: 0.5885612
+  Median: 0.6028069
+  Standard deviation: 0.07548912
 
 GNDVI:
-  Mean: 0.64113647
-  Median: 0.65901834
-  Standard deviation: 0.09027409
+  Mean: 0.71298057
+  Median: 0.73339707
+  Standard deviation: 0.074749716
 
 NDMI:
-  Mean: 0.2051789
-  Median: 0.23265994
-  Standard deviation: 0.1457953
+  Mean: 0.2913511
+  Median: 0.31123942
+  Standard deviation: 0.089755535
 
 EVI:
-  Mean: 0.5478768
-  Median: 0.570182
-  Standard deviation: 0.13704309
+  Mean: 0.5772928
+  Median: 0.5895636
+  Standard deviation: 0.10365554
+ Number of scenes: 6
 
-Observation count:
-  Minimum: 0
-  Maximum: 4
-  Mean: 1.1424937965260547
-
-Scenes found between 2026-07-01 and 2026-08-01: 8
-Scenes retained after cloud filtering: 7
-   2026-07-04 39.14% S2C_MSIL2A_20260704T024521_N0512_R132_T49MEV_20260704T051909
-   2026-07-09 21.89% S2B_MSIL2A_20260709T024529_N0512_R132_T49MEV_20260709T062503
-   2026-07-14 22.49% S2C_MSIL2A_20260714T024531_N0512_R132_T49MEV_20260714T061101
-   2026-07-19 41.58% S2B_MSIL2A_20260719T024529_N0512_R132_T49MEV_20260719T062615
-   2026-07-24 31.88% S2C_MSIL2A_20260724T024531_N0512_R132_T49MEV_20260724T052014
-   2026-07-26 41.54% S2A_MSIL2A_20260726T025151_N0512_R132_T49MEV_20260726T111510
-   2026-07-29 72.33% S2B_MSIL2A_20260729T024529_N0512_R132_T49MEV_20260729T062922
+Scenes found between 2026-07-01 and 2026-08-01: 9
+Scenes retained after cloud filtering: 9
+   2026-07-03 73.97% S2B_MSIL2A_20260703T022529_N0512_R046_T49MHT_20260703T052526
+   2026-07-08 6.51% S2C_MSIL2A_20260708T022531_N0512_R046_T49MHT_20260708T061324
+   2026-07-10 56.74% S2A_MSIL2A_20260710T023141_N0512_R046_T49MHT_20260710T083313
+   2026-07-13 7.96% S2B_MSIL2A_20260713T022529_N0512_R046_T49MHT_20260713T052619
+   2026-07-18 7.36% S2C_MSIL2A_20260718T022531_N0512_R046_T49MHT_20260718T061808
+   2026-07-20 8.91% S2A_MSIL2A_20260720T023141_N0512_R046_T49MHT_20260720T120112
+   2026-07-20 0.02% S2A_MSIL2A_20260720T023141_N0512_R046_T49MHT_20260720T083516
+   2026-07-23 60.93% S2B_MSIL2A_20260723T022529_N0512_R046_T49MHT_20260723T052356
+   2026-07-28 60.54% S2C_MSIL2A_20260728T022531_N0512_R046_T49MHT_20260728T061011
 
 Creating composite for 2026-07
 
 ----------------------------------------
-Processing scene 1/7
-Date: 2026-07-04
-Cloud cover: 39.14%
-Scene ID: S2C_MSIL2A_20260704T024521_N0512_R132_T49MEV_20260704T051909
-Scene date: 2026-07-04
-  SCL class: 3.0 Pixels: 17890
-  SCL class: 4.0 Pixels: 14369
-  SCL class: 5.0 Pixels: 1332
-  SCL class: 7.0 Pixels: 574
-  SCL class: 8.0 Pixels: 11975
-  SCL class: 9.0 Pixels: 10441
+Processing scene 1/9
+Date: 2026-07-03
+Cloud cover: 73.97%
+Scene ID: S2B_MSIL2A_20260703T022529_N0512_R046_T49MHT_20260703T052526
+Scene date: 2026-07-03
+  SCL class: 3.0 Pixels: 25455
+  SCL class: 4.0 Pixels: 382841
+  SCL class: 5.0 Pixels: 28021
+  SCL class: 7.0 Pixels: 33802
+  SCL class: 8.0 Pixels: 68519
+  SCL class: 9.0 Pixels: 29110
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/7
-Date: 2026-07-09
-Cloud cover: 21.89%
-Scene ID: S2B_MSIL2A_20260709T024529_N0512_R132_T49MEV_20260709T062503
-Scene date: 2026-07-09
-  SCL class: 3.0 Pixels: 7515
-  SCL class: 4.0 Pixels: 45421
-  SCL class: 5.0 Pixels: 1871
-  SCL class: 7.0 Pixels: 330
-  SCL class: 8.0 Pixels: 1168
-  SCL class: 9.0 Pixels: 276
+Processing scene 2/9
+Date: 2026-07-08
+Cloud cover: 6.51%
+Scene ID: S2C_MSIL2A_20260708T022531_N0512_R046_T49MHT_20260708T061324
+Scene date: 2026-07-08
+  SCL class: 3.0 Pixels: 30809
+  SCL class: 4.0 Pixels: 481992
+  SCL class: 5.0 Pixels: 4507
+  SCL class: 7.0 Pixels: 3165
+  SCL class: 8.0 Pixels: 37416
+  SCL class: 9.0 Pixels: 9859
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 3/7
-Date: 2026-07-14
-Cloud cover: 22.49%
-Scene ID: S2C_MSIL2A_20260714T024531_N0512_R132_T49MEV_20260714T061101
-Scene date: 2026-07-14
-  SCL class: 2.0 Pixels: 4
-  SCL class: 4.0 Pixels: 53851
-  SCL class: 5.0 Pixels: 2682
-  SCL class: 7.0 Pixels: 44
+Processing scene 3/9
+Date: 2026-07-10
+Cloud cover: 56.74%
+Scene ID: S2A_MSIL2A_20260710T023141_N0512_R046_T49MHT_20260710T083313
+Scene date: 2026-07-10
+  SCL class: 3.0 Pixels: 624
+  SCL class: 4.0 Pixels: 299252
+  SCL class: 5.0 Pixels: 1693
+  SCL class: 7.0 Pixels: 284
+  SCL class: 8.0 Pixels: 464
+  SCL class: 9.0 Pixels: 8
+  SCL class: 10.0 Pixels: 265423
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 4/7
-Date: 2026-07-19
-Cloud cover: 41.58%
-Scene ID: S2B_MSIL2A_20260719T024529_N0512_R132_T49MEV_20260719T062615
-Scene date: 2026-07-19
-  SCL class: 3.0 Pixels: 2245
-  SCL class: 4.0 Pixels: 26357
-  SCL class: 5.0 Pixels: 1852
-  SCL class: 10.0 Pixels: 26127
+Processing scene 4/9
+Date: 2026-07-13
+Cloud cover: 7.96%
+Scene ID: S2B_MSIL2A_20260713T022529_N0512_R046_T49MHT_20260713T052619
+Scene date: 2026-07-13
+  SCL class: 4.0 Pixels: 564974
+  SCL class: 5.0 Pixels: 2774
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 5/7
-Date: 2026-07-24
-Cloud cover: 31.88%
-Scene ID: S2C_MSIL2A_20260724T024531_N0512_R132_T49MEV_20260724T052014
-Scene date: 2026-07-24
-  SCL class: 4.0 Pixels: 6450
-  SCL class: 5.0 Pixels: 114
-  SCL class: 8.0 Pixels: 4
-  SCL class: 10.0 Pixels: 50013
+Processing scene 5/9
+Date: 2026-07-18
+Cloud cover: 7.36%
+Scene ID: S2C_MSIL2A_20260718T022531_N0512_R046_T49MHT_20260718T061808
+Scene date: 2026-07-18
+  SCL class: 4.0 Pixels: 564684
+  SCL class: 5.0 Pixels: 3064
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 6/7
-Date: 2026-07-26
-Cloud cover: 41.54%
-Scene ID: S2A_MSIL2A_20260726T025151_N0512_R132_T49MEV_20260726T111510
-Scene date: 2026-07-26
-  SCL class: 3.0 Pixels: 1279
-  SCL class: 4.0 Pixels: 8119
-  SCL class: 5.0 Pixels: 978
-  SCL class: 7.0 Pixels: 426
-  SCL class: 8.0 Pixels: 15424
-  SCL class: 9.0 Pixels: 9107
-  SCL class: 10.0 Pixels: 21248
+Processing scene 6/9
+Date: 2026-07-20
+Cloud cover: 8.91%
+Scene ID: S2A_MSIL2A_20260720T023141_N0512_R046_T49MHT_20260720T120112
+Scene date: 2026-07-20
+  SCL class: 4.0 Pixels: 564459
+  SCL class: 5.0 Pixels: 3289
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 7/7
-Date: 2026-07-29
-Cloud cover: 72.33%
-Scene ID: S2B_MSIL2A_20260729T024529_N0512_R132_T49MEV_20260729T062922
-Scene date: 2026-07-29
-  SCL class: 3.0 Pixels: 4
-  SCL class: 4.0 Pixels: 11685
-  SCL class: 5.0 Pixels: 3510
-  SCL class: 7.0 Pixels: 3481
-  SCL class: 8.0 Pixels: 22316
-  SCL class: 9.0 Pixels: 15585
+Processing scene 7/9
+Date: 2026-07-20
+Cloud cover: 0.02%
+Scene ID: S2A_MSIL2A_20260720T023141_N0512_R046_T49MHT_20260720T083516
+Scene date: 2026-07-20
+  SCL class: 4.0 Pixels: 564459
+  SCL class: 5.0 Pixels: 3289
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 8/9
+Date: 2026-07-23
+Cloud cover: 60.93%
+Scene ID: S2B_MSIL2A_20260723T022529_N0512_R046_T49MHT_20260723T052356
+Scene date: 2026-07-23
+  SCL class: 3.0 Pixels: 101173
+  SCL class: 4.0 Pixels: 360143
+  SCL class: 5.0 Pixels: 7556
+  SCL class: 7.0 Pixels: 3969
+  SCL class: 8.0 Pixels: 64419
+  SCL class: 9.0 Pixels: 30488
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 9/9
+Date: 2026-07-28
+Cloud cover: 60.54%
+Scene ID: S2C_MSIL2A_20260728T022531_N0512_R046_T49MHT_20260728T061011
+Scene date: 2026-07-28
+  SCL class: 3.0 Pixels: 59876
+  SCL class: 4.0 Pixels: 43012
+  SCL class: 5.0 Pixels: 492
+  SCL class: 7.0 Pixels: 1288
+  SCL class: 8.0 Pixels: 236201
+  SCL class: 9.0 Pixels: 36302
+  SCL class: 10.0 Pixels: 190577
 
 Vegetation indices calculated successfully!
 
@@ -669,123 +851,153 @@ Monthly Composite: 2026-07
 ========================================
 
 NDVI:
-  Mean: 0.71751815
-  Median: 0.7687967
-  Standard deviation: 0.14883368
+  Mean: 0.83277404
+  Median: 0.8659533
+  Standard deviation: 0.094899155
 
 NDRE:
-  Mean: 0.5028989
-  Median: 0.5194006
-  Standard deviation: 0.10165925
+  Mean: 0.5944678
+  Median: 0.61085725
+  Standard deviation: 0.07259314
 
 GNDVI:
-  Mean: 0.6499138
-  Median: 0.67609835
-  Standard deviation: 0.09951792
+  Mean: 0.7399982
+  Median: 0.7566187
+  Standard deviation: 0.061091192
 
 NDMI:
-  Mean: 0.1673866
-  Median: 0.19851598
-  Standard deviation: 0.16127887
+  Mean: 0.29233128
+  Median: 0.32381934
+  Standard deviation: 0.110181615
 
 EVI:
-  Mean: 0.48529786
-  Median: 0.5132494
-  Standard deviation: 0.12017165
+  Mean: 0.58055866
+  Median: 0.5969496
+  Standard deviation: 0.098964155
+ Number of scenes: 9
 
-Observation count:
-  Minimum: 0
-  Maximum: 7
-  Mean: 2.7697115384615385
-
-Scenes found between 2026-08-01 and 2026-09-01: 7
-Scenes retained after cloud filtering: 6
-   2026-08-03 49.64% S2C_MSIL2A_20260803T024531_N0512_R132_T49MEV_20260803T072909
-   2026-08-08 1.13% S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
-   2026-08-15 48.16% S2A_MSIL2A_20260815T025151_N0512_R132_T49MEV_20260815T072713
-   2026-08-18 22.86% S2B_MSIL2A_20260818T024519_N0512_R132_T49MEV_20260818T132602
-   2026-08-23 61.73% S2C_MSIL2A_20260823T024521_N0512_R132_T49MEV_20260823T063508
-   2026-08-28 22.48% S2B_MSIL2A_20260828T024519_N0512_R132_T49MEV_20260828T054422
+Scenes found between 2026-08-01 and 2026-09-01: 9
+Scenes retained after cloud filtering: 9
+   2026-08-02 18.55% S2B_MSIL2A_20260802T022529_N0512_R046_T49MHT_20260802T052442
+   2026-08-07 6.51% S2C_MSIL2A_20260807T022531_N0512_R046_T49MHT_20260807T062210
+   2026-08-09 68.47% S2A_MSIL2A_20260809T023141_N0512_R046_T49MHT_20260809T090113
+   2026-08-12 1.56% S2B_MSIL2A_20260812T022529_N0512_R046_T49MHT_20260812T052535
+   2026-08-17 21.72% S2C_MSIL2A_20260817T022531_N0512_R046_T49MHT_20260817T061609
+   2026-08-22 11.46% S2B_MSIL2A_20260822T022529_N0512_R046_T49MHT_20260822T052438
+   2026-08-27 76.52% S2C_MSIL2A_20260827T022531_N0512_R046_T49MHT_20260827T061408
+   2026-08-29 7.44% S2A_MSIL2A_20260829T023141_N0512_R046_T49MHT_20260829T103308
+   2026-09-01 17.21% S2B_MSIL2A_20260901T022529_N0512_R046_T49MHT_20260901T052420
 
 Creating composite for 2026-08
 
 ----------------------------------------
-Processing scene 1/6
-Date: 2026-08-03
-Cloud cover: 49.64%
-Scene ID: S2C_MSIL2A_20260803T024531_N0512_R132_T49MEV_20260803T072909
-Scene date: 2026-08-03
-  SCL class: 3.0 Pixels: 12408
-  SCL class: 4.0 Pixels: 5994
-  SCL class: 5.0 Pixels: 444
-  SCL class: 7.0 Pixels: 468
-  SCL class: 8.0 Pixels: 20497
-  SCL class: 9.0 Pixels: 16770
+Processing scene 1/9
+Date: 2026-08-02
+Cloud cover: 18.55%
+Scene ID: S2B_MSIL2A_20260802T022529_N0512_R046_T49MHT_20260802T052442
+Scene date: 2026-08-02
+  SCL class: 4.0 Pixels: 564464
+  SCL class: 5.0 Pixels: 3284
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/6
-Date: 2026-08-08
-Cloud cover: 1.13%
-Scene ID: S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
-Scene date: 2026-08-08
-  SCL class: 4.0 Pixels: 53055
-  SCL class: 5.0 Pixels: 3526
+Processing scene 2/9
+Date: 2026-08-07
+Cloud cover: 6.51%
+Scene ID: S2C_MSIL2A_20260807T022531_N0512_R046_T49MHT_20260807T062210
+Scene date: 2026-08-07
+  SCL class: 4.0 Pixels: 563105
+  SCL class: 5.0 Pixels: 4643
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 3/6
-Date: 2026-08-15
-Cloud cover: 48.16%
-Scene ID: S2A_MSIL2A_20260815T025151_N0512_R132_T49MEV_20260815T072713
-Scene date: 2026-08-15
-  SCL class: 4.0 Pixels: 484
-  SCL class: 5.0 Pixels: 29733
-  SCL class: 7.0 Pixels: 14402
-  SCL class: 8.0 Pixels: 8659
-  SCL class: 9.0 Pixels: 2443
-  SCL class: 10.0 Pixels: 860
+Processing scene 3/9
+Date: 2026-08-09
+Cloud cover: 68.47%
+Scene ID: S2A_MSIL2A_20260809T023141_N0512_R046_T49MHT_20260809T090113
+Scene date: 2026-08-09
+  SCL class: 4.0 Pixels: 277324
+  SCL class: 5.0 Pixels: 1329
+  SCL class: 8.0 Pixels: 19
+  SCL class: 10.0 Pixels: 289076
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 4/6
-Date: 2026-08-18
-Cloud cover: 22.86%
-Scene ID: S2B_MSIL2A_20260818T024519_N0512_R132_T49MEV_20260818T132602
-Scene date: 2026-08-18
-  SCL class: 4.0 Pixels: 20
-  SCL class: 5.0 Pixels: 960
-  SCL class: 8.0 Pixels: 276
-  SCL class: 9.0 Pixels: 20
-  SCL class: 10.0 Pixels: 55305
+Processing scene 4/9
+Date: 2026-08-12
+Cloud cover: 1.56%
+Scene ID: S2B_MSIL2A_20260812T022529_N0512_R046_T49MHT_20260812T052535
+Scene date: 2026-08-12
+  SCL class: 4.0 Pixels: 562907
+  SCL class: 5.0 Pixels: 4841
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 5/6
-Date: 2026-08-23
-Cloud cover: 61.73%
-Scene ID: S2C_MSIL2A_20260823T024521_N0512_R132_T49MEV_20260823T063508
-Scene date: 2026-08-23
-  SCL class: 4.0 Pixels: 1280
-  SCL class: 5.0 Pixels: 40339
-  SCL class: 7.0 Pixels: 7619
-  SCL class: 8.0 Pixels: 4735
-  SCL class: 9.0 Pixels: 2608
+Processing scene 5/9
+Date: 2026-08-17
+Cloud cover: 21.72%
+Scene ID: S2C_MSIL2A_20260817T022531_N0512_R046_T49MHT_20260817T061609
+Scene date: 2026-08-17
+  SCL class: 4.0 Pixels: 507012
+  SCL class: 5.0 Pixels: 5062
+  SCL class: 10.0 Pixels: 55674
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 6/6
-Date: 2026-08-28
-Cloud cover: 22.48%
-Scene ID: S2B_MSIL2A_20260828T024519_N0512_R132_T49MEV_20260828T054422
-Scene date: 2026-08-28
-  SCL class: 4.0 Pixels: 2586
-  SCL class: 5.0 Pixels: 53995
+Processing scene 6/9
+Date: 2026-08-22
+Cloud cover: 11.46%
+Scene ID: S2B_MSIL2A_20260822T022529_N0512_R046_T49MHT_20260822T052438
+Scene date: 2026-08-22
+  SCL class: 3.0 Pixels: 504
+  SCL class: 4.0 Pixels: 523297
+  SCL class: 5.0 Pixels: 35447
+  SCL class: 7.0 Pixels: 7512
+  SCL class: 8.0 Pixels: 972
+  SCL class: 9.0 Pixels: 16
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 7/9
+Date: 2026-08-27
+Cloud cover: 76.52%
+Scene ID: S2C_MSIL2A_20260827T022531_N0512_R046_T49MHT_20260827T061408
+Scene date: 2026-08-27
+  SCL class: 4.0 Pixels: 2220
+  SCL class: 8.0 Pixels: 203161
+  SCL class: 10.0 Pixels: 362367
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 8/9
+Date: 2026-08-29
+Cloud cover: 7.44%
+Scene ID: S2A_MSIL2A_20260829T023141_N0512_R046_T49MHT_20260829T103308
+Scene date: 2026-08-29
+  SCL class: 4.0 Pixels: 561389
+  SCL class: 5.0 Pixels: 6355
+  SCL class: 7.0 Pixels: 4
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 9/9
+Date: 2026-09-01
+Cloud cover: 17.21%
+Scene ID: S2B_MSIL2A_20260901T022529_N0512_R046_T49MHT_20260901T052420
+Scene date: 2026-09-01
+  SCL class: 4.0 Pixels: 239030
+  SCL class: 5.0 Pixels: 172082
+  SCL class: 7.0 Pixels: 4
+  SCL class: 8.0 Pixels: 1207
+  SCL class: 10.0 Pixels: 155425
 
 Vegetation indices calculated successfully!
 
@@ -794,61 +1006,76 @@ Monthly Composite: 2026-08
 ========================================
 
 NDVI:
-  Mean: 0.529902
-  Median: 0.5535171
-  Standard deviation: 0.10017928
+  Mean: 0.81162727
+  Median: 0.8481938
+  Standard deviation: 0.10651747
 
 NDRE:
-  Mean: 0.41342652
-  Median: 0.42576072
-  Standard deviation: 0.074524246
+  Mean: 0.5639188
+  Median: 0.5811255
+  Standard deviation: 0.073714204
 
 GNDVI:
-  Mean: 0.44117936
-  Median: 0.45017526
-  Standard deviation: 0.072483815
+  Mean: 0.72792244
+  Median: 0.7465439
+  Standard deviation: 0.06780273
 
 NDMI:
-  Mean: 0.15108049
-  Median: 0.17503232
-  Standard deviation: 0.14836128
+  Mean: 0.2686543
+  Median: 0.3050635
+  Standard deviation: 0.11500048
 
 EVI:
-  Mean: 0.52781713
-  Median: 0.55564344
-  Standard deviation: 0.11829758
+  Mean: 0.58989286
+  Median: 0.6103523
+  Standard deviation: 0.10593774
+ Number of scenes: 9
 
-Observation count:
-  Minimum: 0
-  Maximum: 6
-  Mean: 2.984119106699752
-
-Scenes found between 2026-09-01 and 2026-10-01: 6
-Scenes retained after cloud filtering: 2
-   2026-09-02 18.87% S2C_MSIL2A_20260902T024521_N0512_R132_T49MEV_20260902T073417
-   2026-09-12 4.14% S2C_MSIL2A_20260912T024521_N0512_R132_T49MEV_20260912T061215
+Scenes found between 2026-09-01 and 2026-10-01: 7
+Scenes retained after cloud filtering: 3
+   2026-09-01 17.21% S2B_MSIL2A_20260901T022529_N0512_R046_T49MHT_20260901T052420
+   2026-09-06 33.54% S2C_MSIL2A_20260906T022531_N0512_R046_T49MHT_20260906T061810
+   2026-09-11 3.02% S2B_MSIL2A_20260911T022549_N0512_R046_T49MHT_20260911T044523
 
 Creating composite for 2026-09
 
 ----------------------------------------
-Processing scene 1/2
-Date: 2026-09-02
-Cloud cover: 18.87%
-Scene ID: S2C_MSIL2A_20260902T024521_N0512_R132_T49MEV_20260902T073417
-Scene date: 2026-09-02
-  SCL class: 5.0 Pixels: 11368
-  SCL class: 8.0 Pixels: 3545
-  SCL class: 9.0 Pixels: 41668
+Processing scene 1/3
+Date: 2026-09-01
+Cloud cover: 17.21%
+Scene ID: S2B_MSIL2A_20260901T022529_N0512_R046_T49MHT_20260901T052420
+Scene date: 2026-09-01
+  SCL class: 4.0 Pixels: 239030
+  SCL class: 5.0 Pixels: 172082
+  SCL class: 7.0 Pixels: 4
+  SCL class: 8.0 Pixels: 1207
+  SCL class: 10.0 Pixels: 155425
 
 Vegetation indices calculated successfully!
 
 ----------------------------------------
-Processing scene 2/2
-Date: 2026-09-12
-Cloud cover: 4.14%
-Scene ID: S2C_MSIL2A_20260912T024521_N0512_R132_T49MEV_20260912T061215
-Scene date: 2026-09-12
-  SCL class: 5.0 Pixels: 56581
+Processing scene 2/3
+Date: 2026-09-06
+Cloud cover: 33.54%
+Scene ID: S2C_MSIL2A_20260906T022531_N0512_R046_T49MHT_20260906T061810
+Scene date: 2026-09-06
+  SCL class: 5.0 Pixels: 421737
+  SCL class: 8.0 Pixels: 82078
+  SCL class: 9.0 Pixels: 63933
+
+Vegetation indices calculated successfully!
+
+----------------------------------------
+Processing scene 3/3
+Date: 2026-09-11
+Cloud cover: 3.02%
+Scene ID: S2B_MSIL2A_20260911T022549_N0512_R046_T49MHT_20260911T044523
+Scene date: 2026-09-11
+  SCL class: 4.0 Pixels: 241350
+  SCL class: 5.0 Pixels: 317945
+  SCL class: 7.0 Pixels: 1628
+  SCL class: 8.0 Pixels: 6766
+  SCL class: 9.0 Pixels: 59
 
 Vegetation indices calculated successfully!
 
@@ -857,34 +1084,30 @@ Monthly Composite: 2026-09
 ========================================
 
 NDVI:
-  Mean: 0.2163085
-  Median: 0.2190507
-  Standard deviation: 0.04621209
+  Mean: 0.55189055
+  Median: 0.5717237
+  Standard deviation: 0.1454649
 
 NDRE:
-  Mean: 0.21818838
-  Median: 0.22123647
-  Standard deviation: 0.041935142
+  Mean: 0.43373138
+  Median: 0.448941
+  Standard deviation: 0.09958248
 
 GNDVI:
-  Mean: 0.11654664
-  Median: 0.11792875
-  Standard deviation: 0.039603207
+  Mean: 0.45603013
+  Median: 0.47939947
+  Standard deviation: 0.14097789
 
 NDMI:
-  Mean: 0.20507488
-  Median: 0.22643141
-  Standard deviation: 0.102404214
+  Mean: 0.24325997
+  Median: 0.27505794
+  Standard deviation: 0.097114965
 
 EVI:
-  Mean: 0.8770317
-  Median: 0.85583013
-  Standard deviation: 0.31991786
-
-Observation count:
-  Minimum: 0
-  Maximum: 2
-  Mean: 1.0537996277915633
+  Mean: 0.64676857
+  Median: 0.6686053
+  Standard deviation: 6.9371157
+ Number of scenes: 3
 
 Scenes found between 2026-10-01 and 2026-11-01: 0
 Scenes retained after cloud filtering: 0
@@ -902,5 +1125,5 @@ Scenes retained after cloud filtering: 0
 No usable scenes found for 2026-12.
 
 Monthly Sentinel-2 composite workflow complete!
-Run finished: 2026-09-23 19:21:09
+Run finished for  data/boundaries/ANTANG.geojson : 2026-09-29 19:10:20
 ========================================

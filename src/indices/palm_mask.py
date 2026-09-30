@@ -1,23 +1,25 @@
 """
 Palm Canopy Mask
 
-This module provides two ways to identify palm-canopy candidate pixels:
+Provides two palm-canopy masking approaches:
 
 1. THRESHOLD MODE
-   Uses fixed spectral thresholds for:
-       - NDVI
-       - NDRE
-       - NDRE-B06
-       - NDRE-B07
+   Uses fixed spectral thresholds to create a binary mask.
 
 2. CONTINUOUS MODE
-   Produces a continuous 0-1 Palm Canopy Likelihood Score based on
-   how strongly each pixel meets the selected spectral thresholds.
+   Creates a continuous 0-1 spectral score.
+
+The main compatibility function is:
+
+    calculate_palm_mask()
+
+This allows other modules, such as plantation_image.py, to use the
+palm mask without needing to know which mode is currently selected.
 
 Important:
     This is a spectral palm-canopy candidate mask, not a validated
     species classifier. Sentinel-2 pixels are 10 m, so individual
-    palm trees/crowns are not being directly identified.
+    palm trees/crowns are not directly identified.
 """
 
 import numpy as np
@@ -30,7 +32,6 @@ from src.common.sentinel2_data import (
     red_edge_3,
     nir,
     nir_2,
-    plantation_geometry_utm,
 )
 
 from src.indices.ndvi import calculate_ndvi
@@ -43,20 +44,17 @@ from src.indices.ndre_b07 import calculate_ndre_b07
 # USER SETTINGS
 # ============================================================
 
-# Choose how the palm mask is calculated:
+# Choose the active palm-mask method:
 #
-# "threshold"  = binary mask using fixed thresholds
-# "continuous" = continuous 0-1 likelihood score
+# "threshold"  = binary mask
+# "continuous" = 0-1 continuous score
 #
-
-MASK_MODE = "threshold"
-
-# MASK_MODE = "continuous"
+MASK_MODE = "continuous"
 
 
-# ------------------------------------------------------------
-# Threshold sets
-# ------------------------------------------------------------
+# ============================================================
+# THRESHOLD SETTINGS
+# ============================================================
 
 # Broad:
 # More inclusive. Captures more potential palm-canopy pixels.
@@ -69,7 +67,7 @@ BROAD_THRESHOLDS = {
 
 
 # Balanced:
-# Middle-ground option between broad and conservative.
+# Middle-ground option.
 BALANCED_THRESHOLDS = {
     "ndvi": 0.65,
     "ndre": 0.45,
@@ -79,7 +77,7 @@ BALANCED_THRESHOLDS = {
 
 
 # Conservative:
-# More selective. Only stronger spectral candidates are retained.
+# More selective. Keeps stronger spectral candidates.
 CONSERVATIVE_THRESHOLDS = {
     "ndvi": 0.75,
     "ndre": 0.52,
@@ -88,7 +86,14 @@ CONSERVATIVE_THRESHOLDS = {
 }
 
 
-# Which threshold set should be used?
+THRESHOLD_SETS = {
+    "broad": BROAD_THRESHOLDS,
+    "balanced": BALANCED_THRESHOLDS,
+    "conservative": CONSERVATIVE_THRESHOLDS,
+}
+
+
+# Select which threshold set to use.
 #
 # Options:
 #     "broad"
@@ -99,67 +104,105 @@ THRESHOLD_PRESET = "balanced"
 
 
 # ============================================================
-# LOAD / CALCULATE FEATURES
+# FEATURE CALCULATION
 # ============================================================
 
-ndvi = calculate_ndvi(nir, red)
-ndre = calculate_ndre(nir_2, red_edge_1)
-ndre_b06 = calculate_ndre_b06(nir_2, red_edge_2)
-ndre_b07 = calculate_ndre_b07(nir_2, red_edge_3)
+def calculate_features():
+    """
+    Calculate the four spectral features used by the palm mask.
 
+    Returns:
+        tuple:
+            ndvi
+            ndre
+            ndre_b06
+            ndre_b07
+    """
 
-# ============================================================
-# SELECT THRESHOLDS
-# ============================================================
+    ndvi = calculate_ndvi(nir, red)
 
-THRESHOLD_SETS = {
-    "broad": BROAD_THRESHOLDS,
-    "balanced": BALANCED_THRESHOLDS,
-    "conservative": CONSERVATIVE_THRESHOLDS,
-}
-
-if THRESHOLD_PRESET not in THRESHOLD_SETS:
-    raise ValueError(
-        f"Invalid THRESHOLD_PRESET: {THRESHOLD_PRESET}. "
-        f"Choose from: {list(THRESHOLD_SETS.keys())}"
+    ndre = calculate_ndre(
+        nir_2,
+        red_edge_1,
     )
 
-thresholds = THRESHOLD_SETS[THRESHOLD_PRESET]
+    ndre_b06 = calculate_ndre_b06(
+        nir_2,
+        red_edge_2,
+    )
+
+    ndre_b07 = calculate_ndre_b07(
+        nir_2,
+        red_edge_3,
+    )
+
+    return (
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+    )
 
 
 # ============================================================
-# VALID PIXELS
+# VALID PIXEL MASK
 # ============================================================
 
-valid_pixels = (
-    np.isfinite(ndvi)
-    & np.isfinite(ndre)
-    & np.isfinite(ndre_b06)
-    & np.isfinite(ndre_b07)
-)
+def calculate_valid_pixels(
+    ndvi,
+    ndre,
+    ndre_b06,
+    ndre_b07,
+):
+    """
+    Identify pixels where all four spectral features are valid.
+    """
+
+    return (
+        np.isfinite(ndvi)
+        & np.isfinite(ndre)
+        & np.isfinite(ndre_b06)
+        & np.isfinite(ndre_b07)
+    )
 
 
 # ============================================================
 # THRESHOLD MASK
 # ============================================================
 
-ndvi_pass = ndvi >= thresholds["ndvi"]
-ndre_pass = ndre >= thresholds["ndre"]
-ndre_b06_pass = ndre_b06 >= thresholds["ndre_b06"]
-ndre_b07_pass = ndre_b07 >= thresholds["ndre_b07"]
+def calculate_threshold_mask(
+    ndvi,
+    ndre,
+    ndre_b06,
+    ndre_b07,
+    thresholds,
+):
+    """
+    Create a binary palm-canopy candidate mask.
 
+    A pixel must pass all four spectral thresholds.
+    """
 
-threshold_mask = (
-    valid_pixels
-    & ndvi_pass
-    & ndre_pass
-    & ndre_b06_pass
-    & ndre_b07_pass
-)
+    valid_pixels = calculate_valid_pixels(
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+    )
+
+    mask = (
+        valid_pixels
+        & (ndvi >= thresholds["ndvi"])
+        & (ndre >= thresholds["ndre"])
+        & (ndre_b06 >= thresholds["ndre_b06"])
+        & (ndre_b07 >= thresholds["ndre_b07"])
+    )
+
+    return mask
 
 
 # ============================================================
-# CONTINUOUS PALM CANOPY LIKELIHOOD
+# CONTINUOUS SCORE
 # ============================================================
 
 def calculate_continuous_score(
@@ -168,7 +211,7 @@ def calculate_continuous_score(
     conservative_threshold,
 ):
     """
-    Convert a spectral feature into a 0-1 score.
+    Convert a feature into a 0-1 continuous score.
 
     0:
         At or below the broad threshold.
@@ -178,17 +221,17 @@ def calculate_continuous_score(
 
     Between 0 and 1:
         Linearly scaled between the two thresholds.
-
-    Values above the conservative threshold are capped at 1.
-    Values below the broad threshold are capped at 0.
     """
 
-    denominator = conservative_threshold - broad_threshold
+    denominator = (
+        conservative_threshold
+        - broad_threshold
+    )
 
     if denominator <= 0:
         raise ValueError(
-            "Conservative threshold must be greater than "
-            "the broad threshold."
+            "Conservative threshold must be greater "
+            "than the broad threshold."
         )
 
     score = (
@@ -196,397 +239,757 @@ def calculate_continuous_score(
         / denominator
     )
 
-    return np.clip(score, 0.0, 1.0)
+    return np.clip(
+        score,
+        0.0,
+        1.0,
+    )
 
 
-ndvi_score = calculate_continuous_score(
+def calculate_palm_likelihood(
     ndvi,
-    BROAD_THRESHOLDS["ndvi"],
-    CONSERVATIVE_THRESHOLDS["ndvi"],
-)
-
-ndre_score = calculate_continuous_score(
     ndre,
-    BROAD_THRESHOLDS["ndre"],
-    CONSERVATIVE_THRESHOLDS["ndre"],
-)
-
-ndre_b06_score = calculate_continuous_score(
     ndre_b06,
-    BROAD_THRESHOLDS["ndre_b06"],
-    CONSERVATIVE_THRESHOLDS["ndre_b06"],
-)
-
-ndre_b07_score = calculate_continuous_score(
     ndre_b07,
-    BROAD_THRESHOLDS["ndre_b07"],
-    CONSERVATIVE_THRESHOLDS["ndre_b07"],
-)
+):
+    """
+    Calculate the continuous 0-1 Palm Canopy Likelihood Score.
 
+    This is a relative spectral score, NOT a calibrated probability.
+    """
 
-continuous_score = (
-    ndvi_score
-    + ndre_score
-    + ndre_b06_score
-    + ndre_b07_score
-) / 4.0
+    valid_pixels = calculate_valid_pixels(
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+    )
 
+    ndvi_score = calculate_continuous_score(
+        ndvi,
+        BROAD_THRESHOLDS["ndvi"],
+        CONSERVATIVE_THRESHOLDS["ndvi"],
+    )
 
-# Make invalid pixels NaN rather than treating them as zero.
-continuous_score[~valid_pixels] = np.nan
+    ndre_score = calculate_continuous_score(
+        ndre,
+        BROAD_THRESHOLDS["ndre"],
+        CONSERVATIVE_THRESHOLDS["ndre"],
+    )
+
+    ndre_b06_score = calculate_continuous_score(
+        ndre_b06,
+        BROAD_THRESHOLDS["ndre_b06"],
+        CONSERVATIVE_THRESHOLDS["ndre_b06"],
+    )
+
+    ndre_b07_score = calculate_continuous_score(
+        ndre_b07,
+        BROAD_THRESHOLDS["ndre_b07"],
+        CONSERVATIVE_THRESHOLDS["ndre_b07"],
+    )
+
+    likelihood = (
+        ndvi_score
+        + ndre_score
+        + ndre_b06_score
+        + ndre_b07_score
+    ) / 4.0
+
+    likelihood[~valid_pixels] = np.nan
+
+    return likelihood
 
 
 # ============================================================
-# CHOOSE ACTIVE OUTPUT
+# MAIN COMPATIBILITY FUNCTION
 # ============================================================
 
-if MASK_MODE == "threshold":
+def calculate_palm_mask(
+    ndvi=None,
+    ndre=None,
+    ndre_b06=None,
+    ndre_b07=None,
+    ndvi_threshold=None,
+    ndre_threshold=None,
+    ndre_b06_threshold=None,
+    ndre_b07_threshold=None,
+):
+    """
+    Calculate the palm-canopy mask.
 
-    palm_mask = threshold_mask
+    Supports both the new two-mode system and the older function
+    interface used by existing visualization code.
 
-elif MASK_MODE == "continuous":
+    Parameters
+    ----------
+    ndvi : numpy.ndarray, optional
+        NDVI array. If omitted, NDVI is calculated from the
+        Sentinel-2 data loaded by this module.
 
-    palm_mask = continuous_score
+    ndre : numpy.ndarray, optional
+        NDRE array. If omitted, NDRE is calculated automatically.
 
-else:
+    ndre_b06 : numpy.ndarray, optional
+        NDRE using B06. If omitted, it is calculated automatically.
 
-    raise ValueError(
-        f"Invalid MASK_MODE: {MASK_MODE}. "
-        "Choose either 'threshold' or 'continuous'."
+    ndre_b07 : numpy.ndarray, optional
+        NDRE using B07. If omitted, it is calculated automatically.
+
+    ndvi_threshold : float, optional
+        Backward-compatible NDVI threshold.
+
+    ndre_threshold : float, optional
+        Backward-compatible NDRE threshold.
+
+    ndre_b06_threshold : float, optional
+        Optional NDRE-B06 threshold.
+
+    ndre_b07_threshold : float, optional
+        Optional NDRE-B07 threshold.
+
+    Returns
+    -------
+    numpy.ndarray
+        Threshold mode:
+            Boolean mask.
+
+        Continuous mode:
+            Floating-point 0-1 likelihood score.
+    """
+
+    # --------------------------------------------------------
+    # Calculate missing features
+    # --------------------------------------------------------
+
+    if ndvi is None:
+        ndvi = calculate_ndvi(
+            nir,
+            red,
+        )
+
+    if ndre is None:
+        ndre = calculate_ndre(
+            nir_2,
+            red_edge_1,
+        )
+
+    if ndre_b06 is None:
+        ndre_b06 = calculate_ndre_b06(
+            nir_2,
+            red_edge_2,
+        )
+
+    if ndre_b07 is None:
+        ndre_b07 = calculate_ndre_b07(
+            nir_2,
+            red_edge_3,
+        )
+
+    # --------------------------------------------------------
+    # CONTINUOUS MODE
+    # --------------------------------------------------------
+    #
+    # If the user selects continuous mode, use the full
+    # four-feature continuous score.
+    #
+    # The old threshold arguments are intentionally ignored
+    # here because continuous mode has its own definition.
+    # --------------------------------------------------------
+
+    if MASK_MODE == "continuous":
+
+        return calculate_palm_likelihood(
+            ndvi,
+            ndre,
+            ndre_b06,
+            ndre_b07,
+        )
+
+    # --------------------------------------------------------
+    # THRESHOLD MODE
+    # --------------------------------------------------------
+
+    if MASK_MODE != "threshold":
+
+        raise ValueError(
+            f"Invalid MASK_MODE: {MASK_MODE}. "
+            "Choose either 'threshold' or 'continuous'."
+        )
+
+    # --------------------------------------------------------
+    # Backward compatibility
+    # --------------------------------------------------------
+    #
+    # If the old visualization code supplies NDVI/NDRE
+    # thresholds, use them.
+    #
+    # Otherwise use the currently selected preset.
+    # --------------------------------------------------------
+
+    if (
+        ndvi_threshold is not None
+        or ndre_threshold is not None
+        or ndre_b06_threshold is not None
+        or ndre_b07_threshold is not None
+    ):
+
+        thresholds = {
+            "ndvi": (
+                ndvi_threshold
+                if ndvi_threshold is not None
+                else BALANCED_THRESHOLDS["ndvi"]
+            ),
+
+            "ndre": (
+                ndre_threshold
+                if ndre_threshold is not None
+                else BALANCED_THRESHOLDS["ndre"]
+            ),
+
+            "ndre_b06": (
+                ndre_b06_threshold
+                if ndre_b06_threshold is not None
+                else BALANCED_THRESHOLDS["ndre_b06"]
+            ),
+
+            "ndre_b07": (
+                ndre_b07_threshold
+                if ndre_b07_threshold is not None
+                else BALANCED_THRESHOLDS["ndre_b07"]
+            ),
+        }
+
+    else:
+
+        if THRESHOLD_PRESET not in THRESHOLD_SETS:
+
+            raise ValueError(
+                f"Invalid THRESHOLD_PRESET: "
+                f"{THRESHOLD_PRESET}. "
+                f"Choose from: "
+                f"{list(THRESHOLD_SETS.keys())}"
+            )
+
+        thresholds = THRESHOLD_SETS[
+            THRESHOLD_PRESET
+        ]
+
+    # --------------------------------------------------------
+    # Calculate binary mask
+    # --------------------------------------------------------
+
+    return calculate_threshold_mask(
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+        thresholds,
     )
 
 
 # ============================================================
-# DIAGNOSTICS
+# DIAGNOSTIC SCRIPT
 # ============================================================
 
-valid_count = np.sum(valid_pixels)
+def main():
 
-print()
-print("=" * 60)
-print("PALM CANOPY MASK")
-print("=" * 60)
+    (
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+    ) = calculate_features()
 
-print(f"Mode: {MASK_MODE}")
-print(f"Threshold preset: {THRESHOLD_PRESET}")
+    valid_pixels = calculate_valid_pixels(
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+    )
 
-print()
-print("Thresholds:")
-print(f"  NDVI:      {thresholds['ndvi']}")
-print(f"  NDRE:      {thresholds['ndre']}")
-print(f"  NDRE-B06:  {thresholds['ndre_b06']}")
-print(f"  NDRE-B07:  {thresholds['ndre_b07']}")
+    valid_count = np.sum(valid_pixels)
 
+    if valid_count == 0:
+        raise RuntimeError(
+            "No valid pixels were found. "
+            "Check the Sentinel-2 imagery and plantation geometry."
+        )
 
-# ------------------------------------------------------------
-# Individual threshold diagnostics
-# ------------------------------------------------------------
+    if THRESHOLD_PRESET not in THRESHOLD_SETS:
+        raise ValueError(
+            f"Invalid THRESHOLD_PRESET: "
+            f"{THRESHOLD_PRESET}"
+        )
 
-print()
-print("Individual threshold results:")
+    thresholds = THRESHOLD_SETS[
+        THRESHOLD_PRESET
+    ]
 
-print(
-    f"NDVI >= {thresholds['ndvi']}: "
-    f"{np.sum(valid_pixels & ndvi_pass):,} "
-    f"({np.sum(valid_pixels & ndvi_pass) / valid_count * 100:.2f}%)"
-)
+    # --------------------------------------------------------
+    # Individual threshold results
+    # --------------------------------------------------------
 
-print(
-    f"NDRE >= {thresholds['ndre']}: "
-    f"{np.sum(valid_pixels & ndre_pass):,} "
-    f"({np.sum(valid_pixels & ndre_pass) / valid_count * 100:.2f}%)"
-)
+    ndvi_pass = (
+        ndvi >= thresholds["ndvi"]
+    )
 
-print(
-    f"NDRE-B06 >= {thresholds['ndre_b06']}: "
-    f"{np.sum(valid_pixels & ndre_b06_pass):,} "
-    f"({np.sum(valid_pixels & ndre_b06_pass) / valid_count * 100:.2f}%)"
-)
+    ndre_pass = (
+        ndre >= thresholds["ndre"]
+    )
 
-print(
-    f"NDRE-B07 >= {thresholds['ndre_b07']}: "
-    f"{np.sum(valid_pixels & ndre_b07_pass):,} "
-    f"({np.sum(valid_pixels & ndre_b07_pass) / valid_count * 100:.2f}%)"
-)
+    ndre_b06_pass = (
+        ndre_b06 >= thresholds["ndre_b06"]
+    )
 
+    ndre_b07_pass = (
+        ndre_b07 >= thresholds["ndre_b07"]
+    )
 
-# ------------------------------------------------------------
-# Cumulative threshold diagnostics
-# ------------------------------------------------------------
+    # --------------------------------------------------------
+    # Cumulative masks
+    # --------------------------------------------------------
 
-cumulative_ndvi = valid_pixels & ndvi_pass
+    cumulative_ndvi = (
+        valid_pixels
+        & ndvi_pass
+    )
 
-cumulative_ndre = (
-    cumulative_ndvi
-    & ndre_pass
-)
+    cumulative_ndre = (
+        cumulative_ndvi
+        & ndre_pass
+    )
 
-cumulative_b06 = (
-    cumulative_ndre
-    & ndre_b06_pass
-)
+    cumulative_b06 = (
+        cumulative_ndre
+        & ndre_b06_pass
+    )
 
-cumulative_b07 = (
-    cumulative_b06
-    & ndre_b07_pass
-)
+    cumulative_b07 = (
+        cumulative_b06
+        & ndre_b07_pass
+    )
 
-print()
-print("Cumulative threshold results:")
+    threshold_mask = cumulative_b07
 
-print(
-    f"After NDVI:      "
-    f"{np.sum(cumulative_ndvi):,} "
-    f"({np.sum(cumulative_ndvi) / valid_count * 100:.2f}%)"
-)
+    # --------------------------------------------------------
+    # Continuous score
+    # --------------------------------------------------------
 
-print(
-    f"After NDRE:      "
-    f"{np.sum(cumulative_ndre):,} "
-    f"({np.sum(cumulative_ndre) / valid_count * 100:.2f}%)"
-)
+    continuous_score = calculate_palm_likelihood(
+        ndvi,
+        ndre,
+        ndre_b06,
+        ndre_b07,
+    )
 
-print(
-    f"After NDRE-B06:  "
-    f"{np.sum(cumulative_b06):,} "
-    f"({np.sum(cumulative_b06) / valid_count * 100:.2f}%)"
-)
+    # ========================================================
+    # PRINT DIAGNOSTICS
+    # ========================================================
 
-print(
-    f"After NDRE-B07:  "
-    f"{np.sum(cumulative_b07):,} "
-    f"({np.sum(cumulative_b07) / valid_count * 100:.2f}%)"
-)
+    print()
+    print("=" * 60)
+    print("PALM CANOPY MASK")
+    print("=" * 60)
 
+    print(f"Mode: {MASK_MODE}")
+    print(f"Threshold preset: {THRESHOLD_PRESET}")
 
-# ============================================================
-# THRESHOLD MODE RESULTS
-# ============================================================
+    print()
+    print("Thresholds:")
+    print(
+        f"  NDVI:      {thresholds['ndvi']}"
+    )
+    print(
+        f"  NDRE:      {thresholds['ndre']}"
+    )
+    print(
+        f"  NDRE-B06:  {thresholds['ndre_b06']}"
+    )
+    print(
+        f"  NDRE-B07:  {thresholds['ndre_b07']}"
+    )
 
-threshold_count = np.sum(threshold_mask)
+    # --------------------------------------------------------
+    # Individual thresholds
+    # --------------------------------------------------------
 
-print()
-print("Threshold mask:")
-print(
-    f"Palm-canopy candidate pixels: "
-    f"{threshold_count:,} / {valid_count:,}"
-)
-
-print(
-    f"Percentage of valid pixels: "
-    f"{threshold_count / valid_count * 100:.2f}%"
-)
-
-
-# ============================================================
-# CONTINUOUS MODE RESULTS
-# ============================================================
-
-valid_scores = continuous_score[valid_pixels]
-
-print()
-print("Continuous Palm Canopy Likelihood Score:")
-
-print(
-    f"Minimum:  {np.nanmin(valid_scores):.4f}"
-)
-
-print(
-    f"Maximum:  {np.nanmax(valid_scores):.4f}"
-)
-
-print(
-    f"Mean:     {np.nanmean(valid_scores):.4f}"
-)
-
-print(
-    f"Median:   {np.nanmedian(valid_scores):.4f}"
-)
-
-print(
-    f"Std dev:  {np.nanstd(valid_scores):.4f}"
-)
-
-
-for score_threshold in [0.25, 0.50, 0.75, 0.90]:
+    print()
+    print("Individual threshold results:")
 
     count = np.sum(
-        valid_pixels
-        & (continuous_score >= score_threshold)
+        valid_pixels & ndvi_pass
     )
-
-    percentage = count / valid_count * 100
 
     print(
-        f"Score >= {score_threshold:.2f}: "
-        f"{count:,} pixels "
-        f"({percentage:.2f}%)"
+        f"NDVI >= {thresholds['ndvi']}: "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
     )
 
+    count = np.sum(
+        valid_pixels & ndre_pass
+    )
 
-# ============================================================
-# FINAL OUTPUT STATISTICS
-# ============================================================
+    print(
+        f"NDRE >= {thresholds['ndre']}: "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
 
-if MASK_MODE == "threshold":
+    count = np.sum(
+        valid_pixels & ndre_b06_pass
+    )
 
-    final_count = np.sum(palm_mask)
+    print(
+        f"NDRE-B06 >= {thresholds['ndre_b06']}: "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
+
+    count = np.sum(
+        valid_pixels & ndre_b07_pass
+    )
+
+    print(
+        f"NDRE-B07 >= {thresholds['ndre_b07']}: "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
+
+    # --------------------------------------------------------
+    # Cumulative thresholds
+    # --------------------------------------------------------
+
+    print()
+    print("Cumulative threshold results:")
+
+    count = np.sum(cumulative_ndvi)
+
+    print(
+        f"After NDVI:      "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
+
+    count = np.sum(cumulative_ndre)
+
+    print(
+        f"After NDRE:      "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
+
+    count = np.sum(cumulative_b06)
+
+    print(
+        f"After NDRE-B06:  "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
+
+    count = np.sum(cumulative_b07)
+
+    print(
+        f"After NDRE-B07:  "
+        f"{count:,} "
+        f"({count / valid_count * 100:.2f}%)"
+    )
+
+    # --------------------------------------------------------
+    # Binary mask
+    # --------------------------------------------------------
+
+    threshold_count = np.sum(
+        threshold_mask
+    )
+
+    print()
+    print("Threshold mask:")
+    print(
+        f"Palm-canopy candidate pixels: "
+        f"{threshold_count:,} / "
+        f"{valid_count:,}"
+    )
+
+    print(
+        f"Percentage of valid pixels: "
+        f"{threshold_count / valid_count * 100:.2f}%"
+    )
+
+    # --------------------------------------------------------
+    # Continuous score
+    # --------------------------------------------------------
+
+    valid_scores = (
+        continuous_score[valid_pixels]
+    )
+
+    print()
+    print(
+        "Continuous Palm Canopy "
+        "Likelihood Score:"
+    )
+
+    print(
+        f"Minimum:  "
+        f"{np.nanmin(valid_scores):.4f}"
+    )
+
+    print(
+        f"Maximum:  "
+        f"{np.nanmax(valid_scores):.4f}"
+    )
+
+    print(
+        f"Mean:     "
+        f"{np.nanmean(valid_scores):.4f}"
+    )
+
+    print(
+        f"Median:   "
+        f"{np.nanmedian(valid_scores):.4f}"
+    )
+
+    print(
+        f"Std dev:  "
+        f"{np.nanstd(valid_scores):.4f}"
+    )
+
+    for score_threshold in [
+        0.25,
+        0.50,
+        0.75,
+        0.90,
+    ]:
+
+        count = np.sum(
+            valid_pixels
+            & (
+                continuous_score
+                >= score_threshold
+            )
+        )
+
+        percentage = (
+            count
+            / valid_count
+            * 100
+        )
+
+        print(
+            f"Score >= "
+            f"{score_threshold:.2f}: "
+            f"{count:,} pixels "
+            f"({percentage:.2f}%)"
+        )
+
+    # ========================================================
+    # ACTIVE MASK
+    # ========================================================
 
     print()
     print("ACTIVE MASK")
     print("-" * 60)
-    print("Binary threshold mask selected.")
-    print(
-        f"Candidate pixels: {final_count:,} "
-        f"({final_count / valid_count * 100:.2f}%)"
+
+    if MASK_MODE == "threshold":
+
+        print(
+            "Binary threshold mask selected."
+        )
+
+        print(
+            f"Candidate pixels: "
+            f"{threshold_count:,} "
+            f"({threshold_count / valid_count * 100:.2f}%)"
+        )
+
+    else:
+
+        print(
+            "Continuous 0-1 Palm Canopy "
+            "Likelihood selected."
+        )
+
+    print("=" * 60)
+    print()
+
+    # ========================================================
+    # VISUALIZATION
+    # ========================================================
+
+    fig, axes = plt.subplots(
+        2,
+        3,
+        figsize=(15, 10),
     )
 
-else:
+    # --------------------------------------------------------
+    # NDVI
+    # --------------------------------------------------------
 
-    print()
-    print("ACTIVE MASK")
-    print("-" * 60)
-    print("Continuous 0-1 Palm Canopy Likelihood selected.")
+    im1 = axes[0, 0].imshow(
+        np.where(
+            valid_pixels,
+            ndvi,
+            np.nan,
+        ),
+        cmap="RdYlGn",
+        vmin=0,
+        vmax=1,
+    )
 
+    axes[0, 0].set_title("NDVI")
+    axes[0, 0].axis("off")
 
-print("=" * 60)
-print()
+    plt.colorbar(
+        im1,
+        ax=axes[0, 0],
+        fraction=0.046,
+    )
+
+    # --------------------------------------------------------
+    # NDRE
+    # --------------------------------------------------------
+
+    im2 = axes[0, 1].imshow(
+        np.where(
+            valid_pixels,
+            ndre,
+            np.nan,
+        ),
+        cmap="viridis",
+    )
+
+    axes[0, 1].set_title("NDRE")
+    axes[0, 1].axis("off")
+
+    plt.colorbar(
+        im2,
+        ax=axes[0, 1],
+        fraction=0.046,
+    )
+
+    # --------------------------------------------------------
+    # NDRE-B06
+    # --------------------------------------------------------
+
+    im3 = axes[0, 2].imshow(
+        np.where(
+            valid_pixels,
+            ndre_b06,
+            np.nan,
+        ),
+        cmap="viridis",
+    )
+
+    axes[0, 2].set_title("NDRE-B06")
+    axes[0, 2].axis("off")
+
+    plt.colorbar(
+        im3,
+        ax=axes[0, 2],
+        fraction=0.046,
+    )
+
+    # --------------------------------------------------------
+    # NDRE-B07
+    # --------------------------------------------------------
+
+    im4 = axes[1, 0].imshow(
+        np.where(
+            valid_pixels,
+            ndre_b07,
+            np.nan,
+        ),
+        cmap="viridis",
+    )
+
+    axes[1, 0].set_title("NDRE-B07")
+    axes[1, 0].axis("off")
+
+    plt.colorbar(
+        im4,
+        ax=axes[1, 0],
+        fraction=0.046,
+    )
+
+    # --------------------------------------------------------
+    # Threshold mask
+    # --------------------------------------------------------
+
+    axes[1, 1].imshow(
+        threshold_mask,
+        cmap="gray",
+        vmin=0,
+        vmax=1,
+    )
+
+    axes[1, 1].set_title(
+        f"Threshold Mask ({THRESHOLD_PRESET})"
+    )
+
+    axes[1, 1].axis("off")
+
+    # --------------------------------------------------------
+    # Continuous score
+    # --------------------------------------------------------
+
+    im6 = axes[1, 2].imshow(
+        continuous_score,
+        cmap="viridis",
+        vmin=0,
+        vmax=1,
+    )
+
+    axes[1, 2].set_title(
+        "Continuous Palm Canopy Score"
+    )
+
+    axes[1, 2].axis("off")
+
+    plt.colorbar(
+        im6,
+        ax=axes[1, 2],
+        fraction=0.046,
+    )
+
+    plt.suptitle(
+        f"Palm Canopy Mask Analysis — "
+        f"{MASK_MODE.upper()} MODE",
+        fontsize=16,
+    )
+
+    plt.tight_layout()
+
+    # ========================================================
+    # SAVE
+    # ========================================================
+
+    output_path = (
+        "outputs/"
+        f"palm_mask_"
+        f"{MASK_MODE}_"
+        f"{THRESHOLD_PRESET}.png"
+    )
+
+    plt.savefig(
+        output_path,
+        dpi=300,
+        bbox_inches="tight",
+    )
+
+    plt.show()
+
+    print(
+        f"Visualization saved to: "
+        f"{output_path}"
+    )
 
 
 # ============================================================
-# VISUALIZATION
+# RUN SCRIPT
 # ============================================================
 
-fig, axes = plt.subplots(
-    2,
-    3,
-    figsize=(15, 10),
-)
-
-
-# ------------------------------------------------------------
-# NDVI
-# ------------------------------------------------------------
-
-im1 = axes[0, 0].imshow(
-    np.where(valid_pixels, ndvi, np.nan),
-    cmap="RdYlGn",
-    vmin=0,
-    vmax=1,
-)
-
-axes[0, 0].set_title("NDVI")
-axes[0, 0].axis("off")
-plt.colorbar(im1, ax=axes[0, 0], fraction=0.046)
-
-
-# ------------------------------------------------------------
-# NDRE
-# ------------------------------------------------------------
-
-im2 = axes[0, 1].imshow(
-    np.where(valid_pixels, ndre, np.nan),
-    cmap="viridis",
-)
-
-axes[0, 1].set_title("NDRE")
-axes[0, 1].axis("off")
-plt.colorbar(im2, ax=axes[0, 1], fraction=0.046)
-
-
-# ------------------------------------------------------------
-# NDRE-B06
-# ------------------------------------------------------------
-
-im3 = axes[0, 2].imshow(
-    np.where(valid_pixels, ndre_b06, np.nan),
-    cmap="viridis",
-)
-
-axes[0, 2].set_title("NDRE-B06")
-axes[0, 2].axis("off")
-plt.colorbar(im3, ax=axes[0, 2], fraction=0.046)
-
-
-# ------------------------------------------------------------
-# NDRE-B07
-# ------------------------------------------------------------
-
-im4 = axes[1, 0].imshow(
-    np.where(valid_pixels, ndre_b07, np.nan),
-    cmap="viridis",
-)
-
-axes[1, 0].set_title("NDRE-B07")
-axes[1, 0].axis("off")
-plt.colorbar(im4, ax=axes[1, 0], fraction=0.046)
-
-
-# ------------------------------------------------------------
-# Threshold mask
-# ------------------------------------------------------------
-
-axes[1, 1].imshow(
-    threshold_mask,
-    cmap="gray",
-    vmin=0,
-    vmax=1,
-)
-
-axes[1, 1].set_title(
-    f"Threshold Mask ({THRESHOLD_PRESET})"
-)
-
-axes[1, 1].axis("off")
-
-
-# ------------------------------------------------------------
-# Continuous score
-# ------------------------------------------------------------
-
-im6 = axes[1, 2].imshow(
-    continuous_score,
-    cmap="viridis",
-    vmin=0,
-    vmax=1,
-)
-
-axes[1, 2].set_title(
-    "Continuous Palm Canopy Score"
-)
-
-axes[1, 2].axis("off")
-
-plt.colorbar(
-    im6,
-    ax=axes[1, 2],
-    fraction=0.046,
-)
-
-
-plt.suptitle(
-    f"Palm Canopy Mask Analysis — {MASK_MODE.upper()} MODE",
-    fontsize=16,
-)
-
-plt.tight_layout()
-
-
-# ============================================================
-# SAVE FIGURE
-# ============================================================
-
-output_path = (
-    "outputs/"
-    f"palm_mask_{MASK_MODE}_{THRESHOLD_PRESET}.png"
-)
-
-plt.savefig(
-    output_path,
-    dpi=300,
-    bbox_inches="tight",
-)
-
-plt.show()
-
-print(f"Visualization saved to: {output_path}")
+if __name__ == "__main__":
+    main()
