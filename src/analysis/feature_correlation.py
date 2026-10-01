@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from src.common.output_paths import get_output_directory
 from src.common.sentinel2_data import (
     red,
     green,
@@ -125,7 +126,7 @@ def calculate_correlation_matrix(dataframe):
     return dataframe.corr(method="pearson")
 
 
-def save_correlation_heatmap(correlation_matrix):
+def save_correlation_heatmap(correlation_matrix, output_path):
     """
     Save the correlation matrix as a heatmap.
     """
@@ -188,7 +189,7 @@ def save_correlation_heatmap(correlation_matrix):
     figure.tight_layout()
 
     figure.savefig(
-        OUTPUT_PATH,
+        output_path,
         dpi=300,
         bbox_inches="tight",
     )
@@ -249,6 +250,13 @@ def main():
         "Calculating Sentinel-2 feature correlations..."
     )
 
+    output_directory = get_output_directory()
+
+    output_path = (
+        output_directory /
+        "feature_correlation.png"
+    )
+
     features = calculate_features()
 
     dataframe = create_dataframe(
@@ -274,13 +282,14 @@ def main():
     )
 
     save_correlation_heatmap(
-        correlation_matrix
+        correlation_matrix,
+        output_path
     )
 
     print(
-        f"\nCorrelation heatmap saved to:"
-        f"\n{OUTPUT_PATH}"
+        f"\nFeature comparison saved to:\n{output_path}"
     )
+
 
 
 if __name__ == "__main__":

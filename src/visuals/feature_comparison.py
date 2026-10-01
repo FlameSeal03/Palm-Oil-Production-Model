@@ -23,7 +23,7 @@ from src.indices.ndre_b06 import calculate_ndre_b06
 from src.indices.ndre_b07 import calculate_ndre_b07
 
 
-OUTPUT_PATH = "outputs/feature_comparison.png"
+#OUTPUT_PATH = "outputs/feature_comparison.png"
 
 
 def normalize_index(index):
@@ -126,7 +126,7 @@ def main():
         )
 
     figure.suptitle(
-        "Sentinel-2 Feature Comparison — 2026-08-08",
+        "Sentinel-2 Feature Comparison",
         fontsize=16,
     )
 

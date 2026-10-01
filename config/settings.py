@@ -5,8 +5,10 @@ GEOJSON_PATH = "data/boundaries/AGRO.geojson"
 
 # If wanted to get a specific days info
 # Need the certain date from the best_dates file
-IMAGE_DATE =  "2026-07-20" # for ANTANG 
-#"2026-08-08" #for AGRO 
+IMAGE_DATE =  "2026-08-08"
+#"2026-08-08" #for AGRO
+#"2026-07-20" # for ANTANG 
+ 
 
 
 
