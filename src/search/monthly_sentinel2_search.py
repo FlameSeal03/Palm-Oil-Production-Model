@@ -4,8 +4,8 @@ from pystac_client import Client
 from config.settings import GEOJSON_PATH, START_DATE, END_DATE
 
 
-# Connect to Copernicus Data Space STAC
-STAC_URL = "https://stac.dataspace.copernicus.eu/v1"
+# AWS-hosted Sentinel-2 L2A catalog (Earth Search by Element 84). No credentials needed.
+STAC_URL = "https://earth-search.aws.element84.com/v1"
 catalog = Client.open(STAC_URL)
 
 
