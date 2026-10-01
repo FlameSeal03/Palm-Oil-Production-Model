@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from src.common.output_paths import get_output_directory
 from src.common.sentinel2_data import (
     red,
     green,
@@ -49,6 +50,13 @@ def normalize_index(index):
 def main():
 
     print("Calculating features for comparison visualization...")
+
+    output_directory = get_output_directory()
+
+    output_path = (
+        output_directory /
+        "feature_comparison.png"
+    )
 
     # Calculate the six features we currently want to compare.
     ndvi = calculate_ndvi(red, nir)
@@ -125,7 +133,7 @@ def main():
     figure.tight_layout()
 
     figure.savefig(
-        OUTPUT_PATH,
+        output_path,
         dpi=300,
         bbox_inches="tight",
     )
@@ -133,8 +141,9 @@ def main():
     plt.close(figure)
 
     print(
-        f"\nFeature comparison saved to:\n{OUTPUT_PATH}"
+        f"\nFeature comparison saved to:\n{output_path}"
     )
+
 
 
 if __name__ == "__main__":

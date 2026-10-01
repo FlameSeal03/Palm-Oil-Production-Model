@@ -3,6 +3,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+from src.common.output_paths import get_output_directory
+
 from config.settings import IMAGE_DATE
 
 from src.common.sentinel2_data import (
@@ -232,11 +234,10 @@ if __name__ == "__main__":
         "Creating plantation visualizations..."
     )
 
-    output_directory = Path("outputs")
+    output_directory = get_output_directory()
 
-    output_directory.mkdir(
-        parents=True,
-        exist_ok=True,
+    print(
+        f"Output directory: {output_directory}"
     )
 
     # ----------------------------------------
