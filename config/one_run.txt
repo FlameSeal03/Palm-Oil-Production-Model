@@ -32,3 +32,27 @@ python -m src.indices.ndre_b06
 
 # NDRE-B07 - additional red-edge signal
 python -m src.indices.ndre_b07
+
+# Palm Mask - identifies pixels meeting a certain four vegetation thresholds
+python -m src.indices.palm_mask
+
+# Find best date for plantation based on cloud coverage
+python -m src.search.best_sentinel2_date
+
+# List available Sentinel-2 images by months in date range
+python -m src.search.monthly_sentinel2_search
+
+# Create RGB and vegetation index plantation visuals
+python -m src.visuals.plantation_image
+
+# Create comparision visual of satellite features
+python -m src.visuals.feature_comparison
+
+# Calculate correlations between satellite features
+python -m src.analysis.feature_correlation
+
+# Create log of monthly Sentinel-2 data using multiple satellite scenes
+python -m src.composites.monthly_sentinel2_composite
+
+# Process an individual scene for data processing
+python -m src.composites.process_sentinel2_scene
