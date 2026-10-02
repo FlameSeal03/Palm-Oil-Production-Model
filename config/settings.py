@@ -1,11 +1,11 @@
 # Choose which planation to get data from
 # Keep "data/boundaries/" and change last part for certain planation
 # Check planation_names file for what to put in
-GEOJSON_PATH = "data/boundaries/GRAND.geojson"
+GEOJSON_PATH = "data/boundaries/AGRO.geojson"
 
 # If wanted to get a specific days info
 # Need the certain date from the best_dates file
-IMAGE_DATE =  "2026-08-30"
+IMAGE_DATE =  "2026-08-08"
 #"2026-08-08" # for AGRO
 #"2026-07-20" # for ANTANG 
 #"2026-08-30" # for GRAND

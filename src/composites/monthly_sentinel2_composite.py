@@ -1,12 +1,10 @@
-import time
-
-import numpy as np
-import pystac_client
-from shapely.geometry import shape
-
+import argparse
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import geopandas as gpd
+import numpy as np
 
 from config.settings import (
     GEOJSON_PATH,
@@ -14,6 +12,7 @@ from config.settings import (
     END_DATE,
 )
 
+from src.search.best_sentinel2_date import get_items
 from src.composites.process_sentinel2_scene import (
     process_sentinel2_scene,
 )
@@ -25,42 +24,31 @@ from src.composites.process_sentinel2_scene import (
 
 CLOUD_THRESHOLD = 80.0
 
-STAC_URL = (
-    "https://stac.dataspace.copernicus.eu/v1"
-)
-
-COLLECTION = "sentinel-2-l2a"
+# Indices combined into monthly composites: (display name, results key)
+INDICES = [
+    ("NDVI", "ndvi"),
+    ("NDRE", "ndre"),
+    ("GNDVI", "gndvi"),
+    ("NDMI", "ndmi"),
+    ("EVI", "evi"),
+]
 
 
 # -------------------------------------------------------------
-# Find scenes for one month
+# Select usable scenes for one month
 # -------------------------------------------------------------
 
-def find_monthly_scenes(
-    catalog,
-    plantation_geometry,
-    start_date,
-    end_date,
-):
+def select_monthly_scenes(month_items, month_name):
     """
-    Find Sentinel-2 scenes for a date range.
+    Choose the usable Sentinel-2 scenes for one month.
 
-    Only scenes with cloud cover at or below
-    CLOUD_THRESHOLD are retained.
+    Only scenes with cloud cover at or below CLOUD_THRESHOLD
+    are retained, sorted by acquisition date.
     """
-
-    search = catalog.search(
-        collections=[COLLECTION],
-        intersects=plantation_geometry,
-        datetime=f"{start_date}/{end_date}",
-    )
-
-    scenes = list(search.items())
 
     print(
-        f"\nScenes found between "
-        f"{start_date} and {end_date}:",
-        len(scenes),
+        f"\nScenes found in {month_name}:",
+        len(month_items),
     )
 
     # ---------------------------------------------------------
@@ -69,7 +57,7 @@ def find_monthly_scenes(
 
     usable_scenes = []
 
-    for scene in scenes:
+    for scene in month_items:
 
         cloud_cover = scene.properties.get(
             "eo:cloud_cover"
@@ -143,15 +131,12 @@ def create_monthly_composite(
         f"\nCreating composite for {month_name}"
     )
 
-    # ---------------------------------------------------------
-    # Arrays containing one layer per scene
-    # ---------------------------------------------------------
+    # One list of arrays (one layer per scene) for each index
+    arrays = {key: [] for _, key in INDICES}
 
-    ndvi_arrays = []
-    ndre_arrays = []
-    gndvi_arrays = []
-    ndmi_arrays = []
-    evi_arrays = []
+    # Pixel grid of the first processed scene, used to make sure
+    # every later scene lines up exactly with it
+    reference_grid = None
 
     # ---------------------------------------------------------
     # Process every scene
@@ -185,132 +170,78 @@ def create_monthly_composite(
         )
 
         # -----------------------------------------------------
-        # Process individual scene
+        # Process individual scene (the item is passed directly,
+        # so no extra catalog lookup is needed)
         # -----------------------------------------------------
 
         results = process_sentinel2_scene(
-            scene.id
-        )
-
-        ndvi_arrays.append(
-            results["ndvi"]
-        )
-
-        ndre_arrays.append(
-            results["ndre"]
-        )
-
-        gndvi_arrays.append(
-            results["gndvi"]
-        )
-
-        ndmi_arrays.append(
-            results["ndmi"]
-        )
-
-        evi_arrays.append(
-            results["evi"]
+            scene
         )
 
         # -----------------------------------------------------
-        # Small delay to reduce API pressure
+        # Make sure this scene's pixels line up with the others
         # -----------------------------------------------------
 
-        if index < len(scenes):
-            time.sleep(3)
+        grid = (
+            results["transform"],
+            results["height"],
+            results["width"],
+        )
+
+        if reference_grid is None:
+            reference_grid = grid
+
+        elif grid != reference_grid:
+            print(
+                "  Skipping this scene: its pixel grid does not match "
+                "the other scenes this month (possibly a different "
+                "coordinate system)."
+            )
+            continue
+
+        for _, key in INDICES:
+            arrays[key].append(results[key])
+
+    if not arrays["ndvi"]:
+        print(
+            f"\nNo scenes could be combined for {month_name}."
+        )
+
+        return None
 
     # ---------------------------------------------------------
     # Stack scene arrays
     # ---------------------------------------------------------
-    '''
-    print(
-        "\nStacking monthly scene arrays..."
-    )
-    '''
-    ndvi_stack = np.stack(
-        ndvi_arrays,
-        axis=0,
-    )
 
-    ndre_stack = np.stack(
-        ndre_arrays,
-        axis=0,
-    )
-
-    gndvi_stack = np.stack(
-        gndvi_arrays,
-        axis=0,
-    )
-
-    ndmi_stack = np.stack(
-        ndmi_arrays,
-        axis=0,
-    )
-
-    evi_stack = np.stack(
-        evi_arrays,
-        axis=0,
-    )
+    stacks = {
+        key: np.stack(layers, axis=0)
+        for key, layers in arrays.items()
+    }
 
     # ---------------------------------------------------------
     # Calculate number of valid observations
     # ---------------------------------------------------------
 
     observation_count = np.sum(
-        ~np.isnan(ndvi_stack),
+        ~np.isnan(stacks["ndvi"]),
         axis=0,
     )
 
     # ---------------------------------------------------------
     # Calculate pixel-wise monthly medians
     # ---------------------------------------------------------
-    '''
-    print(
-        "Calculating monthly pixel-wise medians..."
-    )
-    '''
-    monthly_ndvi = np.nanmedian(
-        ndvi_stack,
-        axis=0,
-    )
 
-    monthly_ndre = np.nanmedian(
-        ndre_stack,
-        axis=0,
-    )
+    composite = {"month": month_name}
 
-    monthly_gndvi = np.nanmedian(
-        gndvi_stack,
-        axis=0,
-    )
+    for _, key in INDICES:
+        composite[key] = np.nanmedian(
+            stacks[key],
+            axis=0,
+        )
 
-    monthly_ndmi = np.nanmedian(
-        ndmi_stack,
-        axis=0,
-    )
+    composite["observation_count"] = observation_count
 
-    monthly_evi = np.nanmedian(
-        evi_stack,
-        axis=0,
-    )
-    '''
-    print(
-        "Monthly composite created successfully!"
-    )
-    '''
-    # ---------------------------------------------------------
-    # Return composite
-    # ---------------------------------------------------------
-
-    return {
-        "month": month_name,
-        "ndvi": monthly_ndvi,
-        "ndre": monthly_ndre,
-        "gndvi": monthly_gndvi,
-        "ndmi": monthly_ndmi,
-        "evi": monthly_evi,
-        "observation_count": observation_count,
-    }
+    return composite
 
 
 # -------------------------------------------------------------
@@ -337,113 +268,27 @@ def print_composite_statistics(
         "========================================"
     )
 
-    print("\nNDVI:")
-    print(
-        "  Mean:",
-        np.nanmean(composite["ndvi"]),
-    )
-    print(
-        "  Median:",
-        np.nanmedian(composite["ndvi"]),
-    )
-    print(
-        "  Standard deviation:",
-        np.nanstd(composite["ndvi"]),
-    )
+    for name, key in INDICES:
 
-    print("\nNDRE:")
-    print(
-        "  Mean:",
-        np.nanmean(composite["ndre"]),
-    )
-    print(
-        "  Median:",
-        np.nanmedian(composite["ndre"]),
-    )
-    print(
-        "  Standard deviation:",
-        np.nanstd(composite["ndre"]),
-    )
-
-    print("\nGNDVI:")
-    print(
-        "  Mean:",
-        np.nanmean(composite["gndvi"]),
-    )
-    print(
-        "  Median:",
-        np.nanmedian(composite["gndvi"]),
-    )
-    print(
-        "  Standard deviation:",
-        np.nanstd(composite["gndvi"]),
-    )
-
-    print("\nNDMI:")
-    print(
-        "  Mean:",
-        np.nanmean(composite["ndmi"]),
-    )
-    print(
-        "  Median:",
-        np.nanmedian(composite["ndmi"]),
-    )
-    print(
-        "  Standard deviation:",
-        np.nanstd(composite["ndmi"]),
-    )
-
-    print("\nEVI:")
-    print(
-        "  Mean:",
-        np.nanmean(composite["evi"]),
-    )
-    print(
-        "  Median:",
-        np.nanmedian(composite["evi"]),
-    )
-    print(
-        "  Standard deviation:",
-        np.nanstd(composite["evi"]),
-    )
-
-    observation_count = composite[
-        "observation_count"
-    ]
+        print(f"\n{name}:")
+        print(
+            "  Mean:",
+            np.nanmean(composite[key]),
+        )
+        print(
+            "  Median:",
+            np.nanmedian(composite[key]),
+        )
+        print(
+            "  Standard deviation:",
+            np.nanstd(composite[key]),
+        )
 
     print(
         " Number of scenes:",
-        np.nanmax(observation_count),
-    )
-    '''
-    # ---------------------------------------------------------
-    # Observation coverage
-    # ---------------------------------------------------------
-
-    observation_count = composite[
-        "observation_count"
-    ]
-
-    print(
-        "\nObservation count:"
+        np.nanmax(composite["observation_count"]),
     )
 
-    print(
-        "  Minimum:",
-        np.nanmin(observation_count),
-    )
-
-    print(
-        "  Maximum:",
-        np.nanmax(observation_count),
-    )
-
-    print(
-        "  Mean:",
-        np.nanmean(observation_count),
-    )
-
-    '''
 
 class Tee:
     """
@@ -463,12 +308,19 @@ class Tee:
             file.flush()
 
 
-
 # -------------------------------------------------------------
 # Main program
 # -------------------------------------------------------------
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Ignore the cached scene search and run a new one.",
+    )
+    args = parser.parse_args()
 
     # ---------------------------------------------------------
     # Set up log file
@@ -487,7 +339,7 @@ if __name__ == "__main__":
     )
 
     # ---------------------------------------------------------
-    # Open log file in append mode
+    # Open log file (overwritten on each run)
     # ---------------------------------------------------------
 
     with open(
@@ -528,37 +380,15 @@ if __name__ == "__main__":
                 ),
             )
 
-            print("Planation:", GEOJSON_PATH)
-
-
-            # -------------------------------------------------
-            # Load STAC catalog
-            # -------------------------------------------------
-
-            catalog = pystac_client.Client.open(
-                STAC_URL
-            )
-
-            print(
-                "Connected to Copernicus Data Space."
-            )
+            print("Plantation:", GEOJSON_PATH)
 
             # -------------------------------------------------
             # Load plantation geometry
             # -------------------------------------------------
 
-            import json
+            plantation_gdf = gpd.read_file(GEOJSON_PATH)
 
-            with open(
-                GEOJSON_PATH,
-                "r",
-            ) as file:
-
-                geojson = json.load(file)
-
-            plantation_geometry = shape(
-                geojson["features"][0]["geometry"]
-            )
+            plantation_geometry = plantation_gdf.iloc[0].geometry
 
             print(
                 "Plantation geometry loaded."
@@ -568,6 +398,29 @@ if __name__ == "__main__":
                 "Geometry type:",
                 plantation_geometry.geom_type,
             )
+
+            # -------------------------------------------------
+            # Search for scenes once for the whole date range
+            # (cached, and shared with the other search scripts)
+            # -------------------------------------------------
+
+            all_items = get_items(
+                plantation_geometry.__geo_interface__,
+                f"{START_DATE}/{END_DATE}",
+                refresh=args.refresh,
+            )
+
+            print(
+                f"Scenes found for {START_DATE} to {END_DATE}:",
+                len(all_items),
+            )
+
+            # Group scenes by the month they were acquired in
+            items_by_month = {}
+
+            for item in all_items:
+                month_key = item.datetime.strftime("%Y-%m")
+                items_by_month.setdefault(month_key, []).append(item)
 
             # -------------------------------------------------
             # Create monthly date ranges
@@ -604,45 +457,23 @@ if __name__ == "__main__":
                 )
             ):
 
-                month_start = (
+                month_name = (
                     f"{current_year:04d}-"
-                    f"{current_month:02d}-01"
-                )
-
-                if current_month == 12:
-
-                    next_year = current_year + 1
-                    next_month = 1
-
-                else:
-
-                    next_year = current_year
-                    next_month = current_month + 1
-
-                next_month_start = (
-                    f"{next_year:04d}-"
-                    f"{next_month:02d}-01"
+                    f"{current_month:02d}"
                 )
 
                 # ---------------------------------------------
-                # Find scenes for this month
+                # Select scenes for this month
                 # ---------------------------------------------
 
-                scenes = find_monthly_scenes(
-                    catalog,
-                    plantation_geometry,
-                    month_start,
-                    next_month_start,
+                scenes = select_monthly_scenes(
+                    items_by_month.get(month_name, []),
+                    month_name,
                 )
 
                 # ---------------------------------------------
                 # Create composite
                 # ---------------------------------------------
-
-                month_name = (
-                    f"{current_year:04d}-"
-                    f"{current_month:02d}"
-                )
 
                 composite = create_monthly_composite(
                     scenes,
@@ -663,14 +494,14 @@ if __name__ == "__main__":
                 # Move to next month
                 # ---------------------------------------------
 
-                current_year = next_year
-                current_month = next_month
+                if current_month == 12:
 
-                # ---------------------------------------------
-                # Delay between monthly searches
-                # ---------------------------------------------
+                    current_year += 1
+                    current_month = 1
 
-                time.sleep(3)
+                else:
+
+                    current_month += 1
 
             # -------------------------------------------------
             # End of run
@@ -682,7 +513,7 @@ if __name__ == "__main__":
             )
 
             print(
-                "Run finished for ", GEOJSON_PATH,":",
+                "Run finished for ", GEOJSON_PATH, ":",
                 datetime.now().strftime(
                     "%Y-%m-%d %H:%M:%S"
                 ),

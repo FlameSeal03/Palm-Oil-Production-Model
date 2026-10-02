@@ -1,15 +1,22 @@
-import os
-from io import BytesIO
+import hashlib
+import json
+import math
 from datetime import datetime
 
+import geopandas as gpd
 import numpy as np
-import requests
 import rasterio
-from dotenv import load_dotenv
-from shapely.geometry import shape
+import pystac_client
+from affine import Affine
+from pystac import Item
+from pystac_client import Client
+from rasterio.enums import Resampling
 from rasterio.features import geometry_mask
+from rasterio.windows import Window, bounds as window_bounds, from_bounds
+from rasterio.windows import transform as window_transform
 
-from src.common.sentinel2_data import plantation_geometry_utm
+from config.settings import GEOJSON_PATH, IMAGE_DATE
+from src.search.best_sentinel2_date import STAC_URL, COLLECTION, CACHE_DIR
 
 
 # Reusable vegetation-index functions
@@ -20,26 +27,53 @@ from src.indices.ndmi import calculate_ndmi
 from src.indices.evi import calculate_evi
 
 
+# Output order matches the original script:
+# B02, B03, B04, B05, B06, B07, B08, B8A, B11, B12
+BAND_ASSETS = [
+    "blue",       # B02
+    "green",      # B03
+    "red",        # B04
+    "rededge1",   # B05
+    "rededge2",   # B06
+    "rededge3",   # B07
+    "nir",        # B08
+    "nir08",      # B8A
+    "swir16",     # B11
+    "swir22",     # B12
+]
+
+# Public bucket: no AWS credentials needed.
+GDAL_OPTIONS = {
+    "AWS_NO_SIGN_REQUEST": "YES",
+    "GDAL_DISABLE_READDIR_ON_OPEN": "EMPTY_DIR",
+    "CPL_VSIL_CURL_ALLOWED_EXTENSIONS": ".tif,.tiff",
+    "GDAL_HTTP_MAX_RETRY": "3",
+    "GDAL_HTTP_RETRY_DELAY": "1",
+}
+
+# Plantation boundary (read once; no network needed)
+plantation_gdf = gpd.read_file(GEOJSON_PATH)
+plantation_wgs84 = plantation_gdf.to_crs("EPSG:4326").iloc[0].geometry
+
+
 def get_scene_date(scene_id):
     """
     Extract the acquisition date from a Sentinel-2 scene ID.
 
-    Example:
-        S2B_MSIL2A_20260808T024529_N0512_R132_T49MEV_20260808T045442
+    Works for AWS Earth Search IDs:
+        S2B_49MEV_20260815_0_L2A
+
+    and for Copernicus-style IDs:
+        S2B_MSIL2A_20260815T024529_N0512_R132_T49MEV_20260815T045442
 
     Returns:
-        2026-08-08
+        2026-08-15
     """
 
     try:
         date_string = scene_id.split("_")[2][:8]
 
-        scene_date = datetime.strptime(
-            date_string,
-            "%Y%m%d"
-        ).date()
-
-        return scene_date
+        return datetime.strptime(date_string, "%Y%m%d").date()
 
     except (IndexError, ValueError):
         raise ValueError(
@@ -48,536 +82,293 @@ def get_scene_date(scene_id):
         )
 
 
-def process_sentinel2_scene(scene_id):
+def get_item(scene):
     """
-    Retrieve and process one Sentinel-2 scene.
+    Return a STAC item for a scene.
+
+    `scene` can be a pystac Item (used as is) or an AWS Earth Search
+    scene ID such as "S2B_49MEV_20260815_0_L2A". Lookups are cached.
+    """
+
+    if isinstance(scene, Item):
+        return scene
+
+    CACHE_DIR.mkdir(exist_ok=True)
+    cache_file = CACHE_DIR / f"item_{scene}.json"
+
+    if cache_file.exists():
+        with cache_file.open() as f:
+            return Item.from_dict(json.load(f))
+
+    catalog = Client.open(STAC_URL)
+    results = list(
+        catalog.search(collections=[COLLECTION], ids=[scene]).items()
+    )
+
+    if not results:
+        raise ValueError(
+            f"Scene '{scene}' was not found in the AWS catalog. "
+            "AWS scene IDs look like S2B_49MEV_20260815_0_L2A "
+            "(Copernicus product names will not match)."
+        )
+
+    with cache_file.open("w") as f:
+        json.dump(results[0].to_dict(), f)
+
+    return results[0]
+
+
+def get_asset(item, name):
+    if name not in item.assets:
+        raise KeyError(
+            f"Asset '{name}' not found. Available assets: {sorted(item.assets)}"
+        )
+    return item.assets[name]
+
+
+def scale_and_offset(asset, item):
+    """Convert stored integers to reflectance (0-1).
+
+    The STAC metadata lists an offset of -0.1, but when the scene property
+    'earthsearch:boa_offset_applied' is true the offset has already been
+    applied to the stored values. Applying it again produced negative
+    reflectance and impossible index values, so it is skipped in that case.
+    """
+    bands_info = asset.extra_fields.get("raster:bands") or [{}]
+    info = bands_info[0]
+
+    scale = info.get("scale", 0.0001)
+
+    if item.properties.get("earthsearch:boa_offset_applied", False):
+        offset = 0.0
+    else:
+        offset = info.get("offset", 0.0)
+
+    return scale, offset
+
+
+def read_band(asset, item, bounds, out_shape, reflectance=True):
+    """Read one band for the given bounds, resampled to the 10 m grid."""
+
+    with rasterio.open(asset.href) as src:
+        window = from_bounds(*bounds, transform=src.transform)
+        dn = src.read(
+            1,
+            window=window,
+            out_shape=out_shape,
+            resampling=Resampling.nearest,
+            boundless=True,
+            fill_value=0,
+        )
+
+    if not reflectance:
+        return dn
+
+    scale, offset = scale_and_offset(asset, item)
+
+    # A value of 0 means "no data"
+    return np.where(dn == 0, np.nan, dn * scale + offset).astype("float32")
+
+
+def fetch_scene_arrays(item):
+    """
+    Return (bands, scl, transform, crs) clipped to the plantation.
+
+    bands is shaped (10, height, width) in BAND_ASSETS order.
+    Results are cached locally so reruns do not download again.
+    """
+
+    CACHE_DIR.mkdir(exist_ok=True)
+
+    bounds_key = ",".join(f"{v:.6f}" for v in plantation_wgs84.bounds)
+    key = hashlib.sha256(bounds_key.encode()).hexdigest()[:12]
+    cache_file = CACHE_DIR / f"scene_{item.id}_{key}.npz"
+
+    if cache_file.exists():
+        print(f"Using cached scene ({cache_file.name}).")
+        data = np.load(cache_file, allow_pickle=False)
+        return (
+            data["bands"],
+            data["scl"],
+            Affine(*data["transform"]),
+            str(data["crs"]),
+        )
+
+    with rasterio.Env(**GDAL_OPTIONS):
+
+        # Use the red band (10 m) as the reference grid
+        with rasterio.open(get_asset(item, "red").href) as ref:
+            crs = ref.crs
+            ref_transform = ref.transform
+
+        plantation_in_crs = plantation_gdf.to_crs(crs).iloc[0].geometry
+        min_x, min_y, max_x, max_y = plantation_in_crs.bounds
+
+        # Snap the bounding box outward to whole 10 m pixels
+        col_min, row_min = ~ref_transform * (min_x, max_y)
+        col_max, row_max = ~ref_transform * (max_x, min_y)
+
+        col_off = math.floor(col_min)
+        row_off = math.floor(row_min)
+        width = math.ceil(col_max) - col_off
+        height = math.ceil(row_max) - row_off
+
+        window = Window(col_off, row_off, width, height)
+        bounds = window_bounds(window, ref_transform)
+        transform = window_transform(window, ref_transform)
+
+        bands = np.stack([
+            read_band(get_asset(item, name), item, bounds, (height, width))
+            for name in BAND_ASSETS
+        ])
+
+        # Scene Classification Layer: categorical, so no scaling
+        scl = read_band(
+            get_asset(item, "scl"),
+            item,
+            bounds,
+            (height, width),
+            reflectance=False,
+        ).astype("uint8")
+
+    # Fail loudly rather than cache bad data: red reflectance over a
+    # plantation should never have a negative median.
+    if np.nanmedian(bands[2]) < 0:
+        raise ValueError(
+            "Median red reflectance is negative: the scale/offset looks wrong. "
+            "Check the 'raster:bands' metadata for this scene."
+        )
+
+    np.savez_compressed(
+        cache_file,
+        bands=bands,
+        scl=scl,
+        transform=np.array(transform)[:6],
+        crs=crs.to_string(),
+    )
+
+    return bands, scl, transform, crs.to_string()
+
+
+def process_sentinel2_scene(scene):
+    """
+    Retrieve and process one Sentinel-2 scene from AWS.
+
+    `scene` is an AWS scene ID (for example S2B_49MEV_20260815_0_L2A)
+    or a pystac Item.
 
     The function:
-    1. Extracts the acquisition date from the scene ID.
-    2. Authenticates with Copernicus Data Space.
-    3. Loads the plantation geometry in UTM coordinates.
-    4. Creates a bounding box around the plantation.
-    5. Calculates the required image dimensions at 10 m resolution.
-    6. Retrieves Sentinel-2 spectral bands and SCL.
-    7. Applies an SCL quality mask.
-    8. Applies the exact plantation boundary mask.
-    9. Calculates vegetation indices.
-    10. Returns the index arrays and quality information.
+    1. Looks up the scene and its acquisition date.
+    2. Reads the plantation area of each spectral band and the SCL
+       from AWS (or from the local cache).
+    3. Applies an SCL quality mask.
+    4. Applies the exact plantation boundary mask.
+    5. Calculates vegetation indices.
+    6. Returns the index arrays and quality information.
     """
 
-    #print("\nProcessing scene:")
-    #print(scene_id)
-
     # ---------------------------------------------------------
-    # 1. Determine scene acquisition date
+    # 1. Find the scene and its acquisition date
     # ---------------------------------------------------------
 
-    scene_date = get_scene_date(scene_id)
+    item = get_item(scene)
+    scene_id = item.id
+
+    scene_date = (
+        item.datetime.date() if item.datetime else get_scene_date(scene_id)
+    )
 
     print("Scene date:", scene_date)
 
-    date_from = f"{scene_date}T00:00:00Z"
-    date_to = f"{scene_date}T23:59:59Z"
-
     # ---------------------------------------------------------
-    # 2. Load Sentinel Hub credentials
+    # 2. Read bands and SCL
     # ---------------------------------------------------------
 
-    load_dotenv()
+    bands, scl, transform, crs = fetch_scene_arrays(item)
 
-    client_id = os.getenv("SENTINELHUB_CLIENT_ID")
-    client_secret = os.getenv("SENTINELHUB_CLIENT_SECRET")
-
-    if not client_id or not client_secret:
-        raise ValueError(
-            "Sentinel Hub credentials were not found in .env"
-        )
+    dataset_height, dataset_width = scl.shape
 
     # ---------------------------------------------------------
-    # 3. Get OAuth access token
+    # 3. Create SCL quality mask (4 = vegetation, 5 = not vegetated)
     # ---------------------------------------------------------
 
-    token_url = (
-        "https://identity.dataspace.copernicus.eu/"
-        "auth/realms/CDSE/protocol/openid-connect/token"
-    )
-
-    token_response = requests.post(
-        token_url,
-        data={
-            "grant_type": "client_credentials",
-            "client_id": client_id,
-            "client_secret": client_secret,
-        },
-        timeout=60,
-    )
-
-    token_response.raise_for_status()
-
-    access_token = token_response.json()["access_token"]
-
-    #print("Sentinel Hub authentication successful!")
-
-    # ---------------------------------------------------------
-    # 4. Load plantation geometry
-    # ---------------------------------------------------------
-
-    plantation_utm = shape(plantation_geometry_utm)
-
-    min_x, min_y, max_x, max_y = plantation_utm.bounds
-
-    bbox_utm = (
-        min_x,
-        min_y,
-        max_x,
-        max_y,
-    )
-
-    #print("\nUTM bounding box:")
-    #print(bbox_utm)
-
-    # ---------------------------------------------------------
-    # 5. Calculate image dimensions
-    # ---------------------------------------------------------
-
-    resolution = 10
-
-    width = int(
-        np.ceil(
-            (max_x - min_x) / resolution
-        )
-    )
-
-    height = int(
-        np.ceil(
-            (max_y - min_y) / resolution
-        )
-    )
-
-    #print("\nImage dimensions:")
-    #print("Width:", width)
-    #print("Height:", height)
-    #print("Resolution:", resolution, "meters")
-
-    # ---------------------------------------------------------
-    # 6. Sentinel Hub Process API request
-    # ---------------------------------------------------------
-
-    process_url = (
-        "https://sh.dataspace.copernicus.eu/process/v1"
-    )
-
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    }
-
-    evalscript = """
-    //VERSION=3
-
-    function setup() {
-        return {
-            input: [{
-                bands: [
-                    "B02",
-                    "B03",
-                    "B04",
-                    "B05",
-                    "B06",
-                    "B07",
-                    "B08",
-                    "B8A",
-                    "B11",
-                    "B12",
-                    "SCL"
-                ],
-                units: [
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "REFLECTANCE",
-                    "DN"
-                ]
-            }],
-            output: {
-                bands: 11,
-                sampleType: "FLOAT32"
-            }
-        };
-    }
-
-    function evaluatePixel(sample) {
-        return [
-            sample.B02,
-            sample.B03,
-            sample.B04,
-            sample.B05,
-            sample.B06,
-            sample.B07,
-            sample.B08,
-            sample.B8A,
-            sample.B11,
-            sample.B12,
-            sample.SCL
-        ];
-    }
-    """
-
-    request_body = {
-        "input": {
-            "bounds": {
-                "bbox": bbox_utm,
-                "properties": {
-                    "crs": (
-                        "http://www.opengis.net/def/crs/"
-                        "EPSG/0/32749"
-                    )
-                },
-            },
-            "data": [
-                {
-                    "type": "sentinel-2-l2a",
-                    "dataFilter": {
-                        "timeRange": {
-                            "from": date_from,
-                            "to": date_to,
-                        },
-                        "mosaickingOrder": "mostRecent",
-                    },
-                    "processing": {},
-                }
-            ],
-        },
-        "output": {
-            "width": width,
-            "height": height,
-            "responses": [
-                {
-                    "identifier": "default",
-                    "format": {
-                        "type": "image/tiff"
-                    },
-                }
-            ],
-        },
-        "evalscript": evalscript,
-    }
-
-    # ---------------------------------------------------------
-    # 7. Retrieve imagery
-    # ---------------------------------------------------------
-
-    response = requests.post(
-        process_url,
-        headers=headers,
-        json=request_body,
-        timeout=120,
-    )
-
-    if not response.ok:
-        print("\nSentinel Hub request failed!")
-        print("Status code:", response.status_code)
-        print("Response:")
-        print(response.text)
-
-    response.raise_for_status()
-
-    #print("\nSentinel Hub request successful!")
-    #print("Status code:", response.status_code)
-
-    # ---------------------------------------------------------
-    # 8. Read returned TIFF
-    # ---------------------------------------------------------
-
-    with rasterio.open(
-        BytesIO(response.content)
-    ) as dataset:
-
-        data = dataset.read()
-
-        #print("Image shape:", data.shape)
-        #print("Image dtype:", data.dtype)
-
-        transform = dataset.transform
-
-        dataset_height = dataset.height
-        dataset_width = dataset.width
-
-    # ---------------------------------------------------------
-    # 9. Separate spectral bands
-    # ---------------------------------------------------------
-
-    blue = data[0]
-    green = data[1]
-    red = data[2]
-
-    red_edge_1 = data[3]
-    red_edge_2 = data[4]
-    red_edge_3 = data[5]
-
-    nir = data[6]
-    nir_2 = data[7]
-
-    swir_1 = data[8]
-    swir_2 = data[9]
-
-    scl = data[10]
-
-    # ---------------------------------------------------------
-    # 10. Create SCL quality mask
-    # ---------------------------------------------------------
-
-    scl_valid_mask = np.isin(
-        scl,
-        [4, 5]
-    )
-
-    #print("\nSCL mask created successfully!")
+    scl_valid_mask = np.isin(scl, [4, 5])
 
     total_pixels = scl_valid_mask.size
 
-    scl_usable_pixels = np.sum(
-        scl_valid_mask
-    )
-
-    scl_masked_pixels = (
-        total_pixels -
-        scl_usable_pixels
-    )
-
-    scl_usable_percentage = (
-        scl_usable_pixels /
-        total_pixels *
-        100
-    )
-    '''
-    print(
-        "Total pixels:",
-        total_pixels
-    )
-
-    print(
-        "SCL usable pixels:",
-        scl_usable_pixels
-    )
-
-    print(
-        "SCL masked pixels:",
-        scl_masked_pixels
-    )
-
-    print(
-        "SCL usable percentage:",
-        scl_usable_percentage
-    )
-    '''
     # ---------------------------------------------------------
-    # 11. Create plantation boundary mask
+    # 4. Create plantation boundary mask
     # ---------------------------------------------------------
+
+    plantation_utm = plantation_gdf.to_crs(crs).iloc[0].geometry
 
     plantation_mask = geometry_mask(
         [plantation_utm.__geo_interface__],
         transform=transform,
         invert=True,
-        out_shape=(
-            dataset_height,
-            dataset_width
-        )
-    )
-    '''
-    print(
-        "\nPlantation boundary mask "
-        "created successfully!"
-    )
-    '''
-    plantation_pixels = np.sum(
-        plantation_mask
-    )
-    '''
-    print(
-        "Pixels inside plantation:",
-        plantation_pixels
+        out_shape=(dataset_height, dataset_width),
     )
 
-    print("\nSCL classes inside plantation:")
-    '''
-    plantation_scl = scl[
-        plantation_mask
-    ]
+    plantation_scl = scl[plantation_mask]
 
     plantation_scl_classes, plantation_scl_counts = np.unique(
         plantation_scl,
-        return_counts=True
+        return_counts=True,
     )
 
     for scl_class, count in zip(
         plantation_scl_classes,
-        plantation_scl_counts
+        plantation_scl_counts,
     ):
-        print(
-            "  SCL class:",
-            scl_class,
-            "Pixels:",
-            count
-        )
+        print("  SCL class:", scl_class, "Pixels:", count)
 
     # ---------------------------------------------------------
-    # 12. Combine quality masks
+    # 5. Combine quality masks
     # ---------------------------------------------------------
 
-    valid_mask = (
-        scl_valid_mask &
-        plantation_mask
-    )
+    valid_mask = scl_valid_mask & plantation_mask
 
-    valid_pixels = np.sum(
-        valid_mask
-    )
+    valid_pixels = np.sum(valid_mask)
 
-    invalid_pixels = (
-        total_pixels -
-        valid_pixels
-    )
-
-    valid_percentage = (
-        valid_pixels /
-        total_pixels *
-        100
-    )
-    '''
-    print(
-        "\nCombined mask created successfully!"
-    )
-
-    print(
-        "Valid plantation pixels:",
-        valid_pixels
-    )
-
-    print(
-        "Invalid pixels:",
-        invalid_pixels
-    )
-
-    print(
-        "Valid percentage:",
-        valid_percentage
-    )
-
-    '''
+    # As in the original script, this is relative to the full
+    # bounding box, not only the pixels inside the plantation.
+    valid_percentage = valid_pixels / total_pixels * 100
 
     # ---------------------------------------------------------
-    # 13. Apply combined mask to spectral bands
+    # 6. Apply combined mask to spectral bands
     # ---------------------------------------------------------
 
-    blue = np.where(
-        valid_mask,
+    (
         blue,
-        np.nan
-    )
-
-    green = np.where(
-        valid_mask,
         green,
-        np.nan
-    )
-
-    red = np.where(
-        valid_mask,
         red,
-        np.nan
-    )
-
-    red_edge_1 = np.where(
-        valid_mask,
         red_edge_1,
-        np.nan
-    )
-
-    red_edge_2 = np.where(
-        valid_mask,
         red_edge_2,
-        np.nan
-    )
-
-    red_edge_3 = np.where(
-        valid_mask,
         red_edge_3,
-        np.nan
-    )
-
-    nir = np.where(
-        valid_mask,
         nir,
-        np.nan
-    )
-
-    nir_2 = np.where(
-        valid_mask,
         nir_2,
-        np.nan
-    )
-
-    swir_1 = np.where(
-        valid_mask,
         swir_1,
-        np.nan
-    )
-
-    swir_2 = np.where(
-        valid_mask,
         swir_2,
-        np.nan
-    )
-    '''
-    print(
-        "\nCombined mask applied "
-        "to spectral bands!"
-    )
-    '''
-    # ---------------------------------------------------------
-    # 14. Calculate vegetation indices
-    # ---------------------------------------------------------
-
-    ndvi = calculate_ndvi(
-        red,
-        nir
-    )
-
-    ndre = calculate_ndre(
-        red_edge_1,
-        nir_2
-    )
-
-    gndvi = calculate_gndvi(
-        green,
-        nir
-    )
-
-    ndmi = calculate_ndmi(
-        nir,
-        swir_1
-    )
-
-    evi = calculate_evi(
-        blue,
-        red,
-        nir
-    )
-
-    print(
-        "\nVegetation indices "
-        "calculated successfully!"
-    )
+    ) = [np.where(valid_mask, band, np.nan) for band in bands]
 
     # ---------------------------------------------------------
-    # 15. Return results
+    # 7. Calculate vegetation indices
+    # ---------------------------------------------------------
+
+    ndvi = calculate_ndvi(red, nir)
+
+    ndre = calculate_ndre(red_edge_1, nir_2)
+
+    gndvi = calculate_gndvi(green, nir)
+
+    ndmi = calculate_ndmi(nir, swir_1)
+
+    evi = calculate_evi(blue, red, nir)
+
+    print("\nVegetation indices calculated successfully!")
+
+    # ---------------------------------------------------------
+    # 8. Return results
     # ---------------------------------------------------------
 
     return {
@@ -602,84 +393,30 @@ def process_sentinel2_scene(scene_id):
 
 if __name__ == "__main__":
 
-    scene_id = (
-        "S2B_MSIL2A_20260815T024529_N0512_R132_T49MEV_"
-        "20260815T045442"
-    )
+    # TODO
+    scene_id = "S2B_49MEV_20260815_0_L2A"
 
-    results = process_sentinel2_scene(
-        scene_id
-    )
+    results = process_sentinel2_scene(scene_id)
 
     print("\nFinal results:")
 
-    print(
-        "Scene:",
-        results["scene_id"]
-    )
-
-    print(
-        "Scene date:",
-        results["scene_date"]
-    )
+    print("Scene:", results["scene_id"])
+    print("Scene date:", results["scene_date"])
 
     print(
         "Valid plantation pixels:",
-        np.sum(
-            results["valid_mask"]
-        )
+        np.sum(results["valid_mask"]),
     )
 
-    print(
-        "Valid percentage:",
-        results["usable_percentage"]
-    )
+    print("Valid percentage:", results["usable_percentage"])
 
     print("\nImage dimensions:")
-
-    print(
-        "Width:",
-        results["width"]
-    )
-
-    print(
-        "Height:",
-        results["height"]
-    )
+    print("Width:", results["width"])
+    print("Height:", results["height"])
 
     print("\nMean vegetation indices:")
-
-    print(
-        "NDVI:",
-        np.nanmean(
-            results["ndvi"]
-        )
-    )
-
-    print(
-        "NDRE:",
-        np.nanmean(
-            results["ndre"]
-        )
-    )
-
-    print(
-        "GNDVI:",
-        np.nanmean(
-            results["gndvi"]
-        )
-    )
-
-    print(
-        "NDMI:",
-        np.nanmean(
-            results["ndmi"]
-        )
-    )
-
-    print(
-        "EVI:",
-        np.nanmean(
-            results["evi"]
-        )
-    )
+    print("NDVI:", np.nanmean(results["ndvi"]))
+    print("NDRE:", np.nanmean(results["ndre"]))
+    print("GNDVI:", np.nanmean(results["gndvi"]))
+    print("NDMI:", np.nanmean(results["ndmi"]))
+    print("EVI:", np.nanmean(results["evi"]))

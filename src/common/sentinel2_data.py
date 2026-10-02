@@ -98,17 +98,30 @@ def get_asset(name):
     return item.assets[name]
 
 
-def scale_and_offset(asset):
-    """Convert stored integers to reflectance (0-1)."""
-    bands_info = asset.extra_fields.get("raster:bands", [{}])
-    info = bands_info[0] if bands_info else {}
-    # Fallback values apply to scenes processed with baseline 04.00 or later
-    return info.get("scale", 0.0001), info.get("offset", -0.1)
+def scale_and_offset(asset, item):
+    """Convert stored integers to reflectance (0-1).
+
+    The STAC metadata lists an offset of -0.1, but when the scene property
+    'earthsearch:boa_offset_applied' is true the offset has already been
+    applied to the stored values. Applying it again produced negative
+    reflectance and impossible index values, so it is skipped in that case.
+    """
+    bands_info = asset.extra_fields.get("raster:bands") or [{}]
+    info = bands_info[0]
+
+    scale = info.get("scale", 0.0001)
+
+    if item.properties.get("earthsearch:boa_offset_applied", False):
+        offset = 0.0
+    else:
+        offset = info.get("offset", 0.0)
+
+    return scale, offset
 
 
 def read_band(asset, bounds, out_shape):
     """Read one band for the given bounds, resampled to the 10 m grid."""
-    scale, offset = scale_and_offset(asset)
+    scale, offset = scale_and_offset(asset, item)
 
     with rasterio.open(asset.href) as src:
         window = from_bounds(*bounds, transform=src.transform)
@@ -168,6 +181,14 @@ def fetch_band_stack():
         ]
 
     stack = np.stack(bands)
+
+    # Fail loudly rather than cache bad data: red reflectance over a
+    # plantation should never have a negative median.
+    if np.nanmedian(stack[2]) < 0:
+        raise ValueError(
+            "Median red reflectance is negative: the scale/offset looks wrong. "
+            "Check the 'raster:bands' metadata for this scene."
+        )
 
     np.savez_compressed(
         cache_file,
